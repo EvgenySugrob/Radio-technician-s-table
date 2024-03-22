@@ -2,6 +2,7 @@ using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vmaya.UI.Menu;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpHeight = 1.0f;
     [SerializeField] private float gravityValue = -9.81f;
     [SerializeField] CinemachineInputProvider inputProvider;
+    [SerializeField] private PopupMenu popupMenu;
 
     private CharacterController controller;
     private Vector3 playerVelocity;
@@ -27,22 +29,26 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        groundedPlayer = controller.isGrounded;
-        if (groundedPlayer && playerVelocity.y < 0)
+        if(!popupMenu.GetFocusState())
         {
-            playerVelocity.y = 0f;
+            groundedPlayer = controller.isGrounded;
+            if (groundedPlayer && playerVelocity.y < 0)
+            {
+                playerVelocity.y = 0f;
+            }
+
+            Vector2 movement = inputManager.GetPlayerMovement();
+            Vector3 move = new Vector3(movement.x, 0f, movement.y);
+            move = cameraTransform.forward * move.z + cameraTransform.right * move.x;
+            move.y = 0f;
+            controller.Move(move * Time.deltaTime * playerSpeed);
+
+            if (inputManager.GetCameraRotationState())
+                inputProvider.enabled = true;
+            else
+                inputProvider.enabled = false;
         }
-
-        Vector2 movement = inputManager.GetPlayerMovement();
-        Vector3 move = new Vector3(movement.x,0f,movement.y);
-        move = cameraTransform.forward*move.z+cameraTransform.right*move.x;
-        move.y = 0f;
-        controller.Move(move * Time.deltaTime * playerSpeed);
-
-        if (inputManager.GetCameraRotationState())
-            inputProvider.enabled = true;
-        else
-            inputProvider.enabled = false;
+       
 
 
 

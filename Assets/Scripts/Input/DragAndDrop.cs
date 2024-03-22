@@ -1,14 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
+using Vmaya.UI.Menu;
 
 public class DragAndDrop : MonoBehaviour
 {
     [SerializeField] private InputAction mouseInput;
+    [SerializeField] private InputAction mouseRightInput;
 
     [SerializeField] private float mouseDragSpeed = 1f;
     [SerializeField] private float mouseDragPhysicsSpeed = 1f;
@@ -26,6 +23,9 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] private bool isDrag;
     [SerializeField] GameObject draggedObject;
 
+    [Header("Popup Menu")]
+    [SerializeField] PopupMenu popupMenu;
+
     private void Awake()
     {
         mainCamera = Camera.main;
@@ -36,35 +36,58 @@ public class DragAndDrop : MonoBehaviour
     private void OnEnable()
     {
         mouseInput.Enable();
+        mouseRightInput.Enable();
+
+        mouseRightInput.performed += MouseRightInput;
         mouseInput.performed += MousePressed;
     }
+
+
     private void OnDisable()
     {
+        mouseRightInput.performed -= MouseRightInput;
         mouseInput.performed-= MousePressed;
+
+        mouseRightInput.Disable();
         mouseInput.Disable();
+    }
+
+
+    private void MouseRightInput(InputAction.CallbackContext obj)
+    {
+        if (draggedObject != null)
+        {
+            Debug.Log("daPop");
+            draggedObject.TryGetComponent<PopupMenuProvider>(out var popupMenu);
+            popupMenu.Show();
+        }
     }
 
     private void MousePressed(InputAction.CallbackContext obj)
     {
-        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-
-        if(Physics.Raycast(ray,out hit))
+        if (!popupMenu.GetFocusState()) 
         {
-            if(hit.collider.GetComponent<IDrag>()!=null && draggedObject == null)
+            Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
             {
-                //StartCoroutine(DragUpdate(hit.collider.gameObject));
-                draggedObject = hit.collider.gameObject;
-                isDrag = true;
-            }
-            else if (draggedObject != null)
-            {
-                draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
-                iDragComponent?.onEndDrag();
-                draggedObject = null;
-                isDrag = false;
+                if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null)
+                {
+                    //StartCoroutine(DragUpdate(hit.collider.gameObject));
+                    draggedObject = hit.collider.gameObject;
+                    isDrag = true;
+                }
+                else if (draggedObject != null)
+                {
+                    draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
+                    iDragComponent?.onEndDrag();
+                    draggedObject = null;
+                    isDrag = false;
+                }
             }
         }
+        
     }
 
     private void DragObject()
@@ -99,34 +122,9 @@ public class DragAndDrop : MonoBehaviour
 
     private void Update()
     {
-        if (isDrag)
+        if (isDrag && !popupMenu.GetFocusState())
         {
-            if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist)
-            {
-                currentDistanceToObject += stepsDistance;
-                Debug.Log("da");
-            }
-            if (Input.mouseScrollDelta.y < 0 && currentDistanceToObject > minDist)
-            {
-                currentDistanceToObject -= stepsDistance;
-                Debug.Log("net");
-            }
-
-            draggedObject.TryGetComponent<Rigidbody>(out var rb);
-            draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
-            iDragComponent?.onStartDrag();
-
-            Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (rb != null)
-            {
-                Vector3 direction = ray.GetPoint(currentDistanceToObject) - draggedObject.transform.position;
-                rb.velocity = direction * mouseDragPhysicsSpeed;
-            }
-            else
-            {
-                draggedObject.transform.position = Vector3.SmoothDamp(draggedObject.transform.position, ray.GetPoint(currentDistanceToObject),
-                   ref velocity, mouseDragSpeed);
-            }
+            DragObject();
         }
     }
 }

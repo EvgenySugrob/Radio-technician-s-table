@@ -71,5 +71,10 @@ namespace Vmaya.UI.Menu
         {
             return _menuListProvider;
         }
+
+        public bool GetFocusState()
+        {
+            return _focus;
+        }
     }
 }
