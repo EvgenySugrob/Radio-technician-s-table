@@ -4,9 +4,11 @@ using Vmaya.UI.Menu;
 
 public class DragAndDrop : MonoBehaviour
 {
+    [Header("Inputs")]
     [SerializeField] private InputAction mouseInput;
     [SerializeField] private InputAction mouseRightInput;
 
+    [Header("Setting drag")]
     [SerializeField] private float mouseDragSpeed = 1f;
     [SerializeField] private float mouseDragPhysicsSpeed = 1f;
     [SerializeField] private float currentDistanceToObject;
@@ -14,17 +16,20 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] private float minDist = 0.2f;
     [SerializeField] private float maxDist = 2f;
 
+    [Header("Rotation")]
+    [SerializeField] private DragAndRotation dragAndRotation;
+
+    [Header("Popup Menu")]
+    [SerializeField] PopupMenuCustom popupMenuCustom;
+
     private float distanceToObject = 0.5f;
     private Vector3 velocity = Vector3.zero;
     private Camera mainCamera;
-    private WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
-    private float mouseScrollY;
+    [SerializeField]private bool isDrag;
+    [SerializeField]private bool isRotation;
+    [SerializeField]private GameObject draggedObject;
 
-    [SerializeField] private bool isDrag;
-    [SerializeField] GameObject draggedObject;
 
-    [Header("Popup Menu")]
-    [SerializeField] PopupMenu popupMenu;
 
     private void Awake()
     {
@@ -57,15 +62,25 @@ public class DragAndDrop : MonoBehaviour
     {
         if (draggedObject != null)
         {
-            Debug.Log("daPop");
-            draggedObject.TryGetComponent<PopupMenuProvider>(out var popupMenu);
-            popupMenu.Show();
+            Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.collider.GetComponent<IDrag>() != null && draggedObject == hit.collider.gameObject)
+                {
+                    draggedObject.TryGetComponent<Rigidbody>(out var rb);
+                    rb.velocity = Vector3.zero;
+                    draggedObject.TryGetComponent<PopupMenuObjectType>(out var popupMenu);
+                    popupMenu.Show();
+                }
+            }
         }
     }
 
     private void MousePressed(InputAction.CallbackContext obj)
     {
-        if (!popupMenu.GetFocusState()) 
+        if (!popupMenuCustom.GetStatusPopupMenu()) 
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
@@ -74,16 +89,19 @@ public class DragAndDrop : MonoBehaviour
             {
                 if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null)
                 {
-                    //StartCoroutine(DragUpdate(hit.collider.gameObject));
                     draggedObject = hit.collider.gameObject;
+                    dragAndRotation.SetObjectRotation(draggedObject);
                     isDrag = true;
+                    hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
                 }
                 else if (draggedObject != null)
                 {
                     draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
                     iDragComponent?.onEndDrag();
                     draggedObject = null;
+                    dragAndRotation.SetObjectRotation(draggedObject);
                     isDrag = false;
+                    hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
                 }
             }
         }
@@ -122,9 +140,22 @@ public class DragAndDrop : MonoBehaviour
 
     private void Update()
     {
-        if (isDrag && !popupMenu.GetFocusState())
+        if (isDrag && !popupMenuCustom.GetStatusPopupMenu())
         {
             DragObject();
         }
+        if(popupMenuCustom.GetStatusPopupMenu() && draggedObject!=null)
+        {
+            draggedObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        }
+    }
+
+    public void ClearHand()
+    {
+        isDrag = false;
+        draggedObject.GetComponent<IDrag>().isMovebale = isDrag;
+        draggedObject.GetComponent<IDrag>().onEndDrag();
+        draggedObject = null;
+        dragAndRotation.SetObjectRotation(draggedObject);
     }
 }

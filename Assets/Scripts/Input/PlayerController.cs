@@ -7,10 +7,10 @@ using Vmaya.UI.Menu;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float playerSpeed = 2.0f;
-    [SerializeField] private float jumpHeight = 1.0f;
-    [SerializeField] private float gravityValue = -9.81f;
+    //[SerializeField] private float jumpHeight = 1.0f;
+    //[SerializeField] private float gravityValue = -9.81f;
     [SerializeField] CinemachineInputProvider inputProvider;
-    [SerializeField] private PopupMenu popupMenu;
+    [SerializeField] private PopupMenuCustom popupMenuCustom;
 
     private CharacterController controller;
     private Vector3 playerVelocity;
@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if(!popupMenu.GetFocusState())
+        if(!popupMenuCustom.GetStatusPopupMenu())
         {
             groundedPlayer = controller.isGrounded;
             if (groundedPlayer && playerVelocity.y < 0)
@@ -48,27 +48,9 @@ public class PlayerController : MonoBehaviour
             else
                 inputProvider.enabled = false;
         }
-       
-
-
-
-        //if (inputManager.RightMouseClickThisframe())
-        //{
-        //    Debug.Log("Нажал");
-        //}
-
-        //if (move != Vector3.zero)
-        //{
-        //    gameObject.transform.forward = move;
-        //}
-
-        //// Changes the height position of the player..
-        //if (Input.GetButtonDown("Jump") && groundedPlayer)
-        //{
-        //    playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
-        //}
-
-        //playerVelocity.y += gravityValue * Time.deltaTime;
-        //controller.Move(playerVelocity * Time.deltaTime);
+        else
+        {
+            inputProvider.enabled = false;
+        }
     }
 }

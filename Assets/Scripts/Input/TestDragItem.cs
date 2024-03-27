@@ -6,6 +6,9 @@ using UnityEngine;
 public class TestDragItem : MonoBehaviour, IDrag
 {
     private Rigidbody rb;
+    public bool isFreeze { get; set; }
+
+    public bool isMovebale { get; set; }
 
     private void Awake()
     {
@@ -13,6 +16,7 @@ public class TestDragItem : MonoBehaviour, IDrag
     }
     public void onEndDrag()
     {
+
         rb.useGravity = true;
         rb.velocity = Vector3.zero;
 
@@ -20,6 +24,16 @@ public class TestDragItem : MonoBehaviour, IDrag
 
     public void onStartDrag()
     {
+        if (!isFreeze)
+        {
+            rb.isKinematic = false;
+        }
         rb.useGravity = false;
+    }
+
+    public void onFreeze(bool isFrezeState)
+    {
+        isFreeze= isFrezeState;
+        rb.isKinematic= isFreeze;
     }
 }
