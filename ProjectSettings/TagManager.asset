@@ -11,13 +11,12 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - TriggerTrack
+  - 
   - Water
   - UI
   - Player
-  - RoomSpawnPoint
-  - Volume
-  - Luxmetr
+  - Tools
+  - Magnet
   - 
   - 
   - 
@@ -38,7 +37,8 @@ TagManager:
   - 
   - 
   - 
-  - OtherGarbige
+  - 
+  - 
   - UIRotationObject
   m_SortingLayers:
   - name: Default

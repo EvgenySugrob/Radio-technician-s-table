@@ -4,11 +4,22 @@ using UnityEngine;
 
 public class HandSlotsManager : MonoBehaviour
 {
-    [Header("UI components")]
-    [SerializeField] GameObject leftSlotUI;
-    [SerializeField] GameObject RightSlotUI;
-
     [Header("Physic component")]
-    [SerializeField] GameObject leftSlot;
-    [SerializeField] GameObject rightSlot;
+    [SerializeField] List<HandSlot> handSlotList;
+
+    public void CheckHandSlot(GameObject gameObject)
+    {
+        foreach (HandSlot slot in handSlotList)
+        {
+            if(slot.IsSlotFree())
+            {
+                slot.SetObject(gameObject);
+                break;
+            }
+            else
+            {
+                Debug.Log("В рот себе это засунь");
+            }
+        }
+    }
 }

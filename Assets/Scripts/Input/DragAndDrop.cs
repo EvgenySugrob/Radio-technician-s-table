@@ -15,6 +15,7 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] private float stepsDistance = 0.2f;
     [SerializeField] private float minDist = 0.2f;
     [SerializeField] private float maxDist = 2f;
+    [SerializeField] LayerMask layerMask;
 
     [Header("Rotation")]
     [SerializeField] private DragAndRotation dragAndRotation;
@@ -45,6 +46,7 @@ public class DragAndDrop : MonoBehaviour
 
         mouseRightInput.performed += MouseRightInput;
         mouseInput.performed += MousePressed;
+        Debug.Log(layerMask);
     }
 
 
@@ -85,8 +87,9 @@ public class DragAndDrop : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit,100f,layerMask))
             {
+                Debug.Log(hit.transform.gameObject.name);
                 if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null)
                 {
                     draggedObject = hit.collider.gameObject;
@@ -98,10 +101,11 @@ public class DragAndDrop : MonoBehaviour
                 {
                     draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
                     iDragComponent?.onEndDrag();
+                    iDragComponent.isMovebale = false;
                     draggedObject = null;
                     dragAndRotation.SetObjectRotation(draggedObject);
                     isDrag = false;
-                    hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
+                    //hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
                 }
             }
         }

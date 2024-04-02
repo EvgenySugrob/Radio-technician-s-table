@@ -19,7 +19,7 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
     [Header("Hand Slots")]
     [SerializeField] private HandSlotsManager handSlotsManager;
 
-    private bool isOpen;
+    [SerializeField]private bool isOpen;
     [SerializeField] private bool isSwap = false;
 
     public void OpenPopupMenu(GameObject selectObject, TypeInterectableObject typeInterectable)
@@ -69,11 +69,17 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             dragAndDrop.enabled = true;
             draggedObject.GetComponent<TestDragItem>()?.onStartDrag();
         }
+        ClosePopupMenu();
     }
 
     public void TakeObject()
     {
+        GameObject revDragObj = draggedObject;
+        draggedObject.GetComponent<IDrag>().onFreeze(true);
+        dragAndDrop.ClearHand();
+        handSlotsManager.CheckHandSlot(revDragObj);
 
+        ClosePopupMenu();
     }
 
     public void FreezeObject()
@@ -82,15 +88,22 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
 
         if(drag.isFreeze)
         {
+            buttonsMenuList[2].transform.GetChild(1).GetComponent<TMP_Text>().text = "Зафиксировать";
             drag.onFreeze(false);
         }
         else
         {
+            buttonsMenuList[2].transform.GetChild(1).GetComponent<TMP_Text>().text = "Разблокирвать";
             drag.onFreeze(true);
             dragAndDrop.ClearHand();
         }
+        ClosePopupMenu();
     }
-
+    private void ClosePopupMenu()
+    {
+        isOpen=false;
+        gameObject.SetActive(false);
+    }
     private void CheckTypeInterectable(TypeInterectableObject type)
     {
         draggedObject.TryGetComponent<IDrag>(out var dragInfo);
