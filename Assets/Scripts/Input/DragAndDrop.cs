@@ -30,8 +30,6 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField]private bool isRotation;
     [SerializeField]private GameObject draggedObject;
 
-
-
     private void Awake()
     {
         mainCamera = Camera.main;
@@ -117,12 +115,10 @@ public class DragAndDrop : MonoBehaviour
         if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist)
         {
             currentDistanceToObject += stepsDistance;
-            Debug.Log("da");
         }
         if (Input.mouseScrollDelta.y < 0 && currentDistanceToObject > minDist)
         {
             currentDistanceToObject -= stepsDistance;
-            Debug.Log("net");
         }
 
         draggedObject.TryGetComponent<Rigidbody>(out var rb);

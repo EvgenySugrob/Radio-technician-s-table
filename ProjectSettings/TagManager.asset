@@ -4,9 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - UsebleWhall
-  - UsebleRoof
-  - LuxObject
+  - RadioElement
   layers:
   - Default
   - TransparentFX
