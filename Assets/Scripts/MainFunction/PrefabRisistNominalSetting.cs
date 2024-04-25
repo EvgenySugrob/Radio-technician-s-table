@@ -38,7 +38,10 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     [SerializeField] float connectionAngle;
     [SerializeField] bool forLittleTweezers;
 
+    [SerializeField] bool modelingElement;
+
     private PrefabRisistNominalSetting prefabRisistNominal;
+    private Quaternion startRotation;
     
 
     public double resistNominal { get; set; }
@@ -47,7 +50,7 @@ public class PrefabRisistNominalSetting : MonoBehaviour
 
     private void Start()
     {
-
+        startRotation = transform.localRotation;
         prefabRisistNominal = GetComponent<PrefabRisistNominalSetting>();
         rb= GetComponent<Rigidbody>();
     }
@@ -268,5 +271,10 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     public bool GetTypeTweezers()
     {
         return forLittleTweezers;
+    }
+
+    public void SetDefaultRotation()
+    {
+        transform.localRotation = startRotation;
     }
 }

@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - RadioElement
+  - ModelingLegs
+  - Leg
   layers:
   - Default
   - TransparentFX
