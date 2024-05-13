@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RoundPliers : MonoBehaviour
 {
@@ -12,78 +13,48 @@ public class RoundPliers : MonoBehaviour
     [SerializeField] public GameObject currentHitObject;
     [SerializeField] private bool isTruePosition;
     [SerializeField] GameObject modelingActiveButton;
+    [SerializeField] GameObject sliderBend;
+    [SerializeField] GameObject buttonBack;
 
     [Header("DragDrop/Rotation")]
     [SerializeField] DragAndDrop dragAndDrop;
     [SerializeField] DragAndRotation dragAndRotation;
 
+    [Header("Left/Right part")]
+    [SerializeField] Transform leftPart;
+    [SerializeField] Transform rightPart;
+    [SerializeField] float leftPartAngle;
+    [SerializeField] float rightPartAngle;
+
+    [SerializeField] float speedToLerp;
+
     private BendDeformer bendDeformer;
+    private Vector3 leftPartStartRotation;
+    private Vector3 rightPartStartRotation;
 
-    //[SerializeField] float radiusSphere;
-    //public float maxDistance;
-    //[SerializeField] LayerMask layerMask;
+    private Quaternion startRotationPliersAngle;
+    private Quaternion pliersStartConnectAngle;
+    private Quaternion correctPliersAngleRotation;
+    private bool isLeftSide;
+    private bool isModelling;
+    float currentValue = 0; //начальное значение слайдера
+    private Slider modelingSlider;
 
-    //private Vector3 origin;
-    //private Vector3 direction;
-    //public float currentHitDistance;
-    //public Vector3 currentPosition;
 
-    //private bool isLeg;
+    float vectorDifferenceX;
 
-    //private void Update()
-    //{
-    //    origin = transform.position;
-    //    direction = transform.right;
+    private void Start()
+    {
+        leftPart = transform.GetChild(0).transform;
+        rightPart = transform.GetChild(1).transform;
 
-    //    RaycastHit hit;
-
-    //    if (Physics.SphereCast(origin, radiusSphere, direction, out hit, maxDistance, layerMask, QueryTriggerInteraction.UseGlobal))
-    //    {
-            
-    //        currentHitDistance = hit.distance;
-    //        currentPosition = hit.point;
-    //        if (hit.transform.tag == "Leg")
-    //        {
-    //            isTruePosition = false;
-    //            currentHitObject = hit.transform.gameObject;
-    //            Debug.Log(currentHitObject.name);
-    //            modelingActiveButton.SetActive(true);
-    //            if (currentHitObject.GetComponent<BendDeformer>())
-    //            {
-    //                isTruePosition = true;
-    //            }
-    //            else
-    //            {
-    //                isTruePosition = false;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            modelingActiveButton.SetActive(true);
-    //            isTruePosition = false;
-    //        }
-            
-            
-    //    }
-    //    else
-    //    {
-    //        currentHitDistance = maxDistance;
-    //        currentHitObject = null;
-    //        isTruePosition = false;
-    //        modelingActiveButton.SetActive(false);
-    //    }
-    //}
-
-    //private void OnDrawGizmosSelected()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Debug.DrawLine(origin, origin + direction * currentHitDistance);
-    //    Gizmos.DrawWireSphere(origin + direction * currentHitDistance, radiusSphere);
-    //}
+        leftPartStartRotation = leftPart.localEulerAngles;
+        rightPartStartRotation = rightPart.localEulerAngles;
+        modelingSlider = sliderBend.GetComponent<Slider>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name);
         if (other.GetComponent<Deformable>() || other.GetComponent<SetTruePositionRoundPliers>())
         {
             modelingActiveButton.SetActive(true);
@@ -123,9 +94,7 @@ public class RoundPliers : MonoBehaviour
         if (isTruePosition)
         {
             FrezeObjectModelingLegs();
-            //Переместить на позицию для формавки ножки элемента через Lerp
             transform.position = currentHitObject.transform.GetChild(0).position;
-            transform.rotation = currentHitObject.transform.GetChild(0).rotation;
         }
         else
         {
@@ -136,25 +105,91 @@ public class RoundPliers : MonoBehaviour
     private void FrezeObjectModelingLegs()
     {
         transform.TryGetComponent<IDrag>(out var drag);
+        SetTruePositionRoundPliers truePositionPilers = currentHitObject.GetComponent<SetTruePositionRoundPliers>();
 
         if (drag.isFreeze)
         {
             bendDeformer = null;
-            dragAndDrop.enabled = true;
-            dragAndRotation.enabled = true;
             drag.onFreeze(false);
+            dragAndDrop.SetDraggedObject(transform.gameObject);
+            sliderBend.SetActive(false);
+            isModelling = false;
+            currentValue = 0;
+            modelingSlider.value = currentValue;
+            truePositionPilers.AfterModeling();
+            PliersPartCorrectAngle(false);
         }
         else
         {
+            isModelling = true;
+            isLeftSide = truePositionPilers.LeftSideCheck();
+            correctPliersAngleRotation = Quaternion.Euler(truePositionPilers.GetAngleRotation());
+
             bendDeformer = currentHitObject.GetComponent<BendDeformer>();
             drag.onFreeze(true);
-            dragAndDrop.enabled=false;
-            dragAndRotation.enabled=false;
+            dragAndDrop.ClearHand();
+            CorrectDisplaySliderBar();
+            sliderBend.SetActive(true);
+            pliersStartConnectAngle = transform.rotation;
+
+            SetPliersConnectAngle();
+            PliersPartCorrectAngle(true);
         }
+    }
+
+    private void CorrectDisplaySliderBar()
+    {
+        if(isLeftSide)
+        {
+            sliderBend.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            sliderBend.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, 180);
+        }
+        
+    }
+    private void SetPliersConnectAngle()
+    {
+        Vector3 plierAngle = currentHitObject.GetComponent<SetTruePositionRoundPliers>().GetPliersAngle();
+        transform.eulerAngles = plierAngle;
+        startRotationPliersAngle = Quaternion.Euler(plierAngle);
+    }
+
+    private void PliersPartCorrectAngle(bool isActive)
+    {
+        if (isActive)
+        {
+            leftPart.localEulerAngles = new Vector3(0, leftPartAngle, 0);
+            rightPart.localEulerAngles = new Vector3(0, rightPartAngle, 0);
+        }
+        else 
+        { 
+            leftPart.localEulerAngles = leftPartStartRotation;
+            rightPart.localEulerAngles = rightPartStartRotation;
+        }
+        
     }
 
     public void AngleModelingSet(float value)
     {
-        bendDeformer.Angle = 90f * value;
+        if (isModelling)
+        {
+            if (currentValue < value)
+            {
+                bendDeformer.Angle = 90f * value;
+                transform.rotation = Quaternion.Lerp(transform.rotation, correctPliersAngleRotation, speedToLerp * value);
+                currentValue = value;
+            }
+            else
+            {
+                modelingSlider.value = currentValue;
+            }
+
+            if (modelingSlider.value == modelingSlider.maxValue)
+            {
+                FrezeObjectModelingLegs();
+            }
+        } 
     }
 }

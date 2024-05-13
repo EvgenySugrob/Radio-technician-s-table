@@ -44,7 +44,6 @@ public class DragAndDrop : MonoBehaviour
 
         mouseRightInput.performed += MouseRightInput;
         mouseInput.performed += MousePressed;
-        Debug.Log(layerMask);
     }
 
 
@@ -87,7 +86,6 @@ public class DragAndDrop : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit,100f,layerMask))
             {
-                Debug.Log(hit.transform.gameObject.name);
                 if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null)
                 {
                     draggedObject = hit.collider.gameObject;
@@ -156,6 +154,12 @@ public class DragAndDrop : MonoBehaviour
         draggedObject.GetComponent<IDrag>().isMovebale = isDrag;
         draggedObject.GetComponent<IDrag>().onEndDrag();
         draggedObject = null;
+        dragAndRotation.SetObjectRotation(draggedObject);
+    }
+    public void SetDraggedObject(GameObject gameObject)
+    {
+        draggedObject= gameObject;
+        isDrag = true;
         dragAndRotation.SetObjectRotation(draggedObject);
     }
 }

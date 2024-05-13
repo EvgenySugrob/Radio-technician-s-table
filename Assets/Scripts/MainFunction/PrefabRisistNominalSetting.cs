@@ -35,6 +35,7 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     [SerializeField] Rigidbody rb;
     [SerializeField] List<MeshCollider> meshColliders;
     [SerializeField] List<BoxCollider> boxColliders;
+    [SerializeField] List<CapsuleCollider> capsuleColliders; 
     [SerializeField] float connectionAngle;
     [SerializeField] bool forLittleTweezers;
 
@@ -259,6 +260,10 @@ public class PrefabRisistNominalSetting : MonoBehaviour
             collider.enabled = !isActive;
         }
         foreach(BoxCollider collider in boxColliders)
+        {
+            collider.enabled = !isActive;
+        }
+        foreach(CapsuleCollider collider in capsuleColliders)
         {
             collider.enabled = !isActive;
         }
