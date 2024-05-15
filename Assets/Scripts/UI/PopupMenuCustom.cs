@@ -22,8 +22,12 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
     [SerializeField]private bool isOpen;
     [SerializeField] private bool isSwap = false;
 
+    [Header("ObjectToCheck")]
+    [SerializeField] List<GameObject> objectInteractList;
+
     public void OpenPopupMenu(GameObject selectObject, TypeInterectableObject typeInterectable)
     {
+        isOpen = true;
         draggedObject = selectObject;
         rectTransform.position = Mouse.current.position.ReadValue();
         CheckTypeInterectable(typeInterectable);

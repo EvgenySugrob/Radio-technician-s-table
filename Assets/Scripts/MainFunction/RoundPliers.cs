@@ -15,6 +15,7 @@ public class RoundPliers : MonoBehaviour
     [SerializeField] GameObject modelingActiveButton;
     [SerializeField] GameObject sliderBend;
     [SerializeField] GameObject buttonBack;
+    
 
     [Header("DragDrop/Rotation")]
     [SerializeField] DragAndDrop dragAndDrop;
@@ -39,7 +40,7 @@ public class RoundPliers : MonoBehaviour
     private bool isModelling;
     float currentValue = 0; //начальное значение слайдера
     private Slider modelingSlider;
-
+    private SetTruePositionRoundPliers setTruePositionRoundPliers;
 
     float vectorDifferenceX;
 
@@ -93,7 +94,7 @@ public class RoundPliers : MonoBehaviour
     {
         if (isTruePosition)
         {
-            FrezeObjectModelingLegs();
+            FreezeObjectModelingLegs();
             transform.position = currentHitObject.transform.GetChild(0).position;
         }
         else
@@ -102,28 +103,17 @@ public class RoundPliers : MonoBehaviour
         }
     }
 
-    private void FrezeObjectModelingLegs()
+    private void FreezeObjectModelingLegs()
     {
         transform.TryGetComponent<IDrag>(out var drag);
-        SetTruePositionRoundPliers truePositionPilers = currentHitObject.GetComponent<SetTruePositionRoundPliers>();
+        setTruePositionRoundPliers = currentHitObject.GetComponent<SetTruePositionRoundPliers>();
 
-        if (drag.isFreeze)
-        {
-            bendDeformer = null;
-            drag.onFreeze(false);
-            dragAndDrop.SetDraggedObject(transform.gameObject);
-            sliderBend.SetActive(false);
-            isModelling = false;
-            currentValue = 0;
-            modelingSlider.value = currentValue;
-            truePositionPilers.AfterModeling();
-            PliersPartCorrectAngle(false);
-        }
-        else
+
+        if (!drag.isFreeze)
         {
             isModelling = true;
-            isLeftSide = truePositionPilers.LeftSideCheck();
-            correctPliersAngleRotation = Quaternion.Euler(truePositionPilers.GetAngleRotation());
+            isLeftSide = setTruePositionRoundPliers.LeftSideCheck();
+            correctPliersAngleRotation = Quaternion.Euler(setTruePositionRoundPliers.GetAngleRotation());
 
             bendDeformer = currentHitObject.GetComponent<BendDeformer>();
             drag.onFreeze(true);
@@ -134,9 +124,23 @@ public class RoundPliers : MonoBehaviour
 
             SetPliersConnectAngle();
             PliersPartCorrectAngle(true);
+
         }
     }
-
+    private void UnfreezeObjectModelingLegs()
+    {
+        transform.TryGetComponent<IDrag>(out var drag);
+        bendDeformer = null;
+        drag.onFreeze(false);
+        dragAndDrop.SetDraggedObject(transform.gameObject);
+        sliderBend.SetActive(false);
+        isModelling = false;
+        currentValue = 0;
+        modelingSlider.value = currentValue;
+        setTruePositionRoundPliers.AfterModeling();
+        modelingActiveButton.SetActive(false);
+        PliersPartCorrectAngle(false);
+    }
     private void CorrectDisplaySliderBar()
     {
         if(isLeftSide)
@@ -188,7 +192,7 @@ public class RoundPliers : MonoBehaviour
 
             if (modelingSlider.value == modelingSlider.maxValue)
             {
-                FrezeObjectModelingLegs();
+                UnfreezeObjectModelingLegs();
             }
         } 
     }

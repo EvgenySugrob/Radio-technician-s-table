@@ -41,7 +41,7 @@ public class PrefabRisistNominalSetting : MonoBehaviour
 
     [SerializeField] bool modelingElement;
 
-    private PrefabRisistNominalSetting prefabRisistNominal;
+    [SerializeField]private PrefabRisistNominalSetting prefabRisistNominal;
     private Quaternion startRotation;
     
 

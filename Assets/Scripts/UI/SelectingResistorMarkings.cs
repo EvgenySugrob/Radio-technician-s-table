@@ -418,7 +418,7 @@ public class SelectingResistorMarkings : MonoBehaviour
         resistNominalText.text = nominal.ToString() + $" {multiplicateString} ± {admittance}%";
     }
 
-    public void SetPrefabAndStartSetting(int firstValue,int secondValue, int thirdValue,string multiplicateValue,int admittanceValue,PrefabRisistNominalSetting prefab)
+    public void SetPrefabAndStartSetting(int firstValue,int secondValue, int thirdValue,string multiplicateValue,int admittanceValue, PrefabRisistNominalSetting prefab)
     {
         prefabResist = prefab;
         FirstDigitalValue(firstValue);

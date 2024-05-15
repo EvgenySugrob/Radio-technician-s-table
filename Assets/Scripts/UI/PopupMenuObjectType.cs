@@ -6,6 +6,9 @@ public enum TypeInterectableObject
 {
     FullInterectable,
     HalfInterectable,
+    Tweezers,
+    Pliers,
+    SideCutters,
     None
 }
 
@@ -13,11 +16,6 @@ public class PopupMenuObjectType : MonoBehaviour
 {
     [SerializeField] PopupMenuCustom popupMenuCustom;
     [SerializeField] TypeInterectableObject typeInterectableObject;
-
-    private void Awake()
-    {
-        popupMenuCustom = FindObjectOfType<PopupMenuCustom>();
-    }
 
     public void Show()
     {

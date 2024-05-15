@@ -13,6 +13,7 @@ public class FilmResistChoice : MonoBehaviour
 
     public void DelegatePrefabParams()
     {
+        Debug.Log(resistPrefab.name);
         resistPrefab.GetParamToMarkingWindow();
         markingWindow.SetActive(true);
         choiceWindow.SetActive(false);

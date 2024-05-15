@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     //[SerializeField] private float gravityValue = -9.81f;
     [SerializeField] CinemachineInputProvider inputProvider;
     [SerializeField] private PopupMenuCustom popupMenuCustom;
+    [SerializeField] List<PopupMenuCustom> popupMenuCustomList;
+    [SerializeField] CheckOpenUIComponent checkOpenUIComponent;
 
     private CharacterController controller;
     private Vector3 playerVelocity;
@@ -29,7 +31,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if(!popupMenuCustom.GetStatusPopupMenu())
+        if(NonOpenPopupMenu() && checkOpenUIComponent.NonActiveUIComponent())
         {
             groundedPlayer = controller.isGrounded;
             if (groundedPlayer && playerVelocity.y < 0)
@@ -52,5 +54,18 @@ public class PlayerController : MonoBehaviour
         {
             inputProvider.enabled = false;
         }
+    }
+    private bool NonOpenPopupMenu()
+    {
+        bool isClose = true;
+        foreach (PopupMenuCustom popupItem in popupMenuCustomList)
+        {
+            if (popupItem.GetStatusPopupMenu())
+            {
+                isClose = false;
+                break;
+            }
+        }
+        return isClose;
     }
 }

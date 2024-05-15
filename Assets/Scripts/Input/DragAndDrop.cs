@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Vmaya.UI.Menu;
@@ -20,8 +21,10 @@ public class DragAndDrop : MonoBehaviour
     [Header("Rotation")]
     [SerializeField] private DragAndRotation dragAndRotation;
 
-    [Header("Popup Menu")]
+    [Header("Popup Menu and UI")]
     [SerializeField] PopupMenuCustom popupMenuCustom;
+    [SerializeField] List<PopupMenuCustom> popupMenuCustomList;
+    [SerializeField] CheckOpenUIComponent checkOpenUIComponent;
 
     private float distanceToObject = 0.5f;
     private Vector3 velocity = Vector3.zero;
@@ -29,6 +32,7 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField]private bool isDrag;
     [SerializeField]private bool isRotation;
     [SerializeField]private GameObject draggedObject;
+
 
     private void Awake()
     {
@@ -59,7 +63,7 @@ public class DragAndDrop : MonoBehaviour
 
     private void MouseRightInput(InputAction.CallbackContext obj)
     {
-        if (draggedObject != null)
+        if (draggedObject != null && checkOpenUIComponent.NonActiveUIComponent())
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
@@ -79,7 +83,7 @@ public class DragAndDrop : MonoBehaviour
 
     private void MousePressed(InputAction.CallbackContext obj)
     {
-        if (!popupMenuCustom.GetStatusPopupMenu()) 
+        if (NonOpenPopupMenu() && checkOpenUIComponent.NonActiveUIComponent()) 
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
@@ -107,7 +111,19 @@ public class DragAndDrop : MonoBehaviour
         }
         
     }
-
+    private bool NonOpenPopupMenu()
+    {
+        bool isClose = true;
+        foreach (PopupMenuCustom popupItem in popupMenuCustomList)
+        {
+            if (popupItem.GetStatusPopupMenu())
+            {
+                isClose = false;
+                break;
+            }
+        }
+        return isClose;
+    }
     private void DragObject()
     {
         if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist)
@@ -138,11 +154,11 @@ public class DragAndDrop : MonoBehaviour
 
     private void Update()
     {
-        if (isDrag && !popupMenuCustom.GetStatusPopupMenu())
+        if (isDrag && NonOpenPopupMenu() && checkOpenUIComponent.NonActiveUIComponent())
         {
             DragObject();
         }
-        if(popupMenuCustom.GetStatusPopupMenu() && draggedObject!=null)
+        if(!NonOpenPopupMenu() && draggedObject!=null)
         {
             draggedObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
         }

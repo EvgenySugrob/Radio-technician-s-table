@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OpenInventory : MonoBehaviour
 {
-    private bool isOpen;
+    [SerializeField] private bool isOpen;
     [SerializeField] GameObject inventoryWindow;
 
     public void OpenClose()
@@ -12,10 +12,12 @@ public class OpenInventory : MonoBehaviour
         if (isOpen == false)
         {
             inventoryWindow.SetActive(true);
+            isOpen= true;
         }
         else
         {
             inventoryWindow.SetActive(false);
+            isOpen= false;
         }
     }
 }

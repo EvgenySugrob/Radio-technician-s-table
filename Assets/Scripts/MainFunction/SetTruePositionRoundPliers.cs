@@ -12,13 +12,16 @@ public class SetTruePositionRoundPliers : MonoBehaviour
     [SerializeField] CapsuleCollider capsuleCollider;
     [SerializeField] BoxCollider boxCollider;
     [SerializeField] MeshCollider meshCollider;
-    [SerializeField] BoxCollider modelingBoxCollider;
+    [SerializeField] BoxCollider moldingBoxCollider;
+    [SerializeField] Rigidbody rigidbodyLegs;
 
     private void Start()
     {
         capsuleCollider = transform.parent.GetComponent<CapsuleCollider>();
         meshCollider= transform.parent.GetComponent<MeshCollider>();
         boxCollider = GetComponent<BoxCollider>();
+        moldingBoxCollider = transform.parent.GetComponent<BoxCollider>();
+        rigidbodyLegs = transform.parent.GetComponent<Rigidbody>();
     }
 
     public bool LeftSideCheck()
@@ -41,5 +44,7 @@ public class SetTruePositionRoundPliers : MonoBehaviour
         capsuleCollider.enabled = false;
         boxCollider.enabled = false;
         //meshCollider.enabled = true;
+        moldingBoxCollider.enabled = true;
+        Destroy(rigidbodyLegs);
     }
 }

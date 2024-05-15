@@ -39,6 +39,7 @@ public class Tweezers : MonoBehaviour
     {
         if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers)
         {
+            Debug.Log("TW+");
             takeDropRadioElement.TakeDropButtonActivate(isTakeElement, isLittleTweezers);
             //takeButton.gameObject.SetActive(true);
             radioElement = other.gameObject;
