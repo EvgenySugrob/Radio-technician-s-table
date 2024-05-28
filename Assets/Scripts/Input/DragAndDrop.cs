@@ -90,8 +90,9 @@ public class DragAndDrop : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit,100f,layerMask))
             {
+                Debug.Log(hit.transform.name);
                 if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null)
-                {
+                {       
                     draggedObject = hit.collider.gameObject;
                     dragAndRotation.SetObjectRotation(draggedObject);
                     isDrag = true;
@@ -106,6 +107,21 @@ public class DragAndDrop : MonoBehaviour
                     dragAndRotation.SetObjectRotation(draggedObject);
                     isDrag = false;
                     //hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
+                }
+
+                //if(hit.collider.GetComponent<SolderStationDetect>()!=null && draggedObject == null)
+                //{
+                //    hit.collider.GetComponent<SolderStationDetect>().StartMoveToStation();
+                //}
+
+                if(hit.collider.GetComponent<PlugActive>()!=null && draggedObject == null)
+                {
+                    hit.collider.GetComponent<PlugActive>().PlugInSocket();
+                }
+
+                if (hit.collider.GetComponent<SwitchOnOff>()!=null && draggedObject == null)
+                {
+                    hit.collider.GetComponent<SwitchOnOff>().ButtonTurnOnOff();
                 }
             }
         }
