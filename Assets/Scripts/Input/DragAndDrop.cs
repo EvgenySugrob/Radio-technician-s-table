@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Vmaya.UI.Menu;
+using UnityEngine.InputSystem.Interactions;
+using UnityEngine.UI;
 
 public class DragAndDrop : MonoBehaviour
 {
@@ -30,9 +31,27 @@ public class DragAndDrop : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     private Camera mainCamera;
     [SerializeField]private bool isDrag;
+    [SerializeField]private bool isHoldMouse;
     [SerializeField]private bool isRotation;
     [SerializeField]private GameObject draggedObject;
 
+    [SerializeField] SolderStationDetect solderStationDetect;
+
+    
+    [Header("Regulator rotation")]
+    [SerializeField] Transform regulator;
+    TemperatureRegulatorSetting settingRegulator;
+    [SerializeField]private bool regulatorCheck;
+    [SerializeField]private int curretntIndexTemerature = 0;
+    private int stepIndexTemperature = 1;
+
+    [Header("Hold solder input")]
+    [SerializeField] private bool isHoldingSolder;
+    [SerializeField] float holdDuration = 1f;
+    [SerializeField] GameObject progressBarSolder;
+    [SerializeField] Image goodProgress;
+    [SerializeField] Image badProgress;
+    private float holdTimer = 0f;
 
     private void Awake()
     {
@@ -83,16 +102,16 @@ public class DragAndDrop : MonoBehaviour
 
     private void MousePressed(InputAction.CallbackContext obj)
     {
-        if (NonOpenPopupMenu() && checkOpenUIComponent.NonActiveUIComponent()) 
+        if (NonOpenPopupMenu() && checkOpenUIComponent.NonActiveUIComponent() && isHoldMouse == false)
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit,100f,layerMask))
+            if (Physics.Raycast(ray, out hit, 100f, layerMask))
             {
                 Debug.Log(hit.transform.name);
-                if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null)
-                {       
+                if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null && solderStationDetect.detect == false)
+                {
                     draggedObject = hit.collider.gameObject;
                     dragAndRotation.SetObjectRotation(draggedObject);
                     isDrag = true;
@@ -109,24 +128,68 @@ public class DragAndDrop : MonoBehaviour
                     //hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
                 }
 
-                //if(hit.collider.GetComponent<SolderStationDetect>()!=null && draggedObject == null)
-                //{
-                //    hit.collider.GetComponent<SolderStationDetect>().StartMoveToStation();
-                //}
+                if (hit.collider.GetComponent<SolderStationDetect>() != null && draggedObject == null && solderStationDetect.detect == false)
+                {
+                    hit.collider.GetComponent<SolderStationDetect>().StartMoveToStation();
+                }
 
-                if(hit.collider.GetComponent<PlugActive>()!=null && draggedObject == null)
+                if (hit.collider.GetComponent<PlugActive>() != null && draggedObject == null)
                 {
                     hit.collider.GetComponent<PlugActive>().PlugInSocket();
                 }
 
-                if (hit.collider.GetComponent<SwitchOnOff>()!=null && draggedObject == null)
+                if (hit.collider.GetComponent<SwitchOnOff>() != null && draggedObject == null)
                 {
                     hit.collider.GetComponent<SwitchOnOff>().ButtonTurnOnOff();
                 }
+
+                if (hit.collider.GetComponent<TemperatureRegulatorSetting>() != null && draggedObject == null && solderStationDetect.detect == true)
+                {
+                    //    regulator = hit.collider.GetComponent<TemperatureRegulatorSetting>().transform;
+
+                    //    pressPoint = Input.mousePosition;
+                    //    startRotation = regulator.transform.localRotation;
+                    //    startAxisRotationX = endAxisRotationX;
+
+                    regulatorCheck = true;
+                }
+
             }
+
         }
         
     }
+    public void OnHold(InputAction.CallbackContext obj)
+    {
+        if (obj.started)
+        {
+            Debug.Log("Aga");
+            isHoldingSolder = true;
+        }
+        else if (obj.canceled)
+        {
+            Debug.Log("Cancel");//ResetHold();
+        }
+    }
+    private void ResetHold()
+    {
+        isHoldingSolder = false;
+        holdTimer = 0;                          //заменить на продолжение пайки
+        goodProgress.fillAmount = 0;            //так же
+    }
+    private void HoldSolder()
+    {
+        if (isHoldingSolder) 
+        {
+            holdTimer += Time.deltaTime;
+            goodProgress.fillAmount = holdTimer / holdDuration;
+            if (holdTimer>=holdDuration)
+            {
+                //StartBad progress
+            }
+        }
+    }
+
     private bool NonOpenPopupMenu()
     {
         bool isClose = true;
@@ -177,6 +240,64 @@ public class DragAndDrop : MonoBehaviour
         if(!NonOpenPopupMenu() && draggedObject!=null)
         {
             draggedObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        }
+
+        //solderJob
+        HoldSolder();
+
+        //test Regulator Rotation
+        if (regulatorCheck)
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 100f, layerMask))
+            {
+                if (hit.collider.GetComponent<TemperatureRegulatorSetting>() != null)
+                {
+                    settingRegulator = hit.collider.GetComponent<TemperatureRegulatorSetting>();
+                    RotationRegulator();
+                }
+                else
+                {
+                    settingRegulator= null;
+                    regulatorCheck = false;
+                }
+            }
+                
+
+
+            //if (mouseInput.ReadValue<float>() != 0)
+            //{
+            //    float currentDistanceBetweenMousePosition = (Input.mousePosition - pressPoint).x;
+
+            //    endAxisRotationX = startAxisRotationX - currentDistanceBetweenMousePosition;
+
+            //    Debug.Log(endAxisRotationX);
+            //    regulator.transform.localRotation = startRotation * Quaternion.Euler
+            //        (Vector3.left * currentDistanceBetweenMousePosition
+            //        );
+
+            //}
+            //else
+            //{
+            //    regulatorCheck = false;
+            //    regulator= null;
+            //}
+        }
+    }
+
+    private void RotationRegulator()
+    {
+        if (Input.mouseScrollDelta.y > 0 && curretntIndexTemerature < 11)
+        {
+            curretntIndexTemerature += stepIndexTemperature;
+            settingRegulator.SetRegulatorTemperature(curretntIndexTemerature);
+        }
+        if (Input.mouseScrollDelta.y < 0 && curretntIndexTemerature > 0)
+        {
+            curretntIndexTemerature -= stepIndexTemperature;
+            settingRegulator.SetRegulatorTemperature(curretntIndexTemerature);
         }
     }
 

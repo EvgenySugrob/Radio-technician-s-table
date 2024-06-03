@@ -5,7 +5,7 @@ using UnityEngine;
 public class SolderStationDetect : MonoBehaviour
 {
     [SerializeField] MoveToFromStation moveToFromStation;
-    [SerializeField] bool detect;
+    public bool detect { get; set; }
 
     public void StartMoveToStation()
     {

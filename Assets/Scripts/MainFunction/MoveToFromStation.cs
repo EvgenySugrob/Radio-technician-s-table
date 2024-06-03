@@ -9,6 +9,7 @@ public class MoveToFromStation : MonoBehaviour
     [SerializeField] Transform startStationPoint;
     [SerializeField] float speedMove;
     [SerializeField] float speedRotation;
+    [SerializeField] SolderStationDetect solderStationDetect;
     
     [Header("PlayerComponent")]
     [SerializeField] Transform player;
@@ -19,6 +20,16 @@ public class MoveToFromStation : MonoBehaviour
     [Header("UI Component")]
     [SerializeField] GameObject backToMainViewBt;
 
+    [Header("Station Interact")]
+    [SerializeField] GameObject switchOnOff;
+    [SerializeField] GameObject temperatureRegulator;
+    private BoxCollider switchOnOffCollider;
+    private BoxCollider temperatureRegulatorCollider;
+
+    [Header("Status")]
+    [SerializeField] bool isStationPosition;
+    [SerializeField] bool isMove;
+
     private CharacterController characterController;
     private PlayerController playerController;
     private Vector3 positionBeforeMoving;
@@ -27,8 +38,7 @@ public class MoveToFromStation : MonoBehaviour
     private float minDistance = 0.005f;
     private bool stationDetect;
 
-    [SerializeField] bool isStationPosition;
-    [SerializeField] bool isMove;
+
 
     private void Start()
     {
@@ -36,6 +46,9 @@ public class MoveToFromStation : MonoBehaviour
         playerController = player.GetComponent<PlayerController>();
         playerCamera = player.GetChild(0).transform;
         brainCamera = player.GetChild(0).GetComponent<CinemachineBrain>();
+
+        switchOnOffCollider = switchOnOff.GetComponent<BoxCollider>();
+        temperatureRegulatorCollider = temperatureRegulator.GetComponent<BoxCollider>();
     }
     private void Update()
     {
@@ -62,6 +75,8 @@ public class MoveToFromStation : MonoBehaviour
             isMove = false;
             isStationPosition = true;
             backToMainViewBt.SetActive(true);
+            switchOnOffCollider.enabled = true;
+            temperatureRegulatorCollider.enabled = true;
         }
     }
     private void MoveFromStation()
@@ -73,16 +88,19 @@ public class MoveToFromStation : MonoBehaviour
         }
         else
         {
+            switchOnOffCollider.enabled = true;
+            temperatureRegulatorCollider.enabled = true;
             isMove = false;
             isStationPosition = false;
+            solderStationDetect.detect = false;
             EnableMainFunctionPlayer();
         }
     }
 
     private void EnableMainFunctionPlayer()
     {
-        
-        dragAndDrop.enabled = true;
+        //dragAndDrop.enabled = true;
+
         characterController.enabled = true;
         playerController.enabled = true;
         brainCamera.enabled = true;
@@ -90,9 +108,10 @@ public class MoveToFromStation : MonoBehaviour
 
     public void PlayerToStation()
     {
+        solderStationDetect.detect = true;
         positionBeforeMoving = player.position;
         rotationBeforeMoving = playerCamera.rotation;
-        dragAndDrop.enabled = false;
+        //dragAndDrop.enabled = false;
         characterController.enabled = false;
         playerController.enabled = false;
         brainCamera.enabled = false;

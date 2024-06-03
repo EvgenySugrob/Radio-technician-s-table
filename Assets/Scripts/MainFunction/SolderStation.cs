@@ -8,4 +8,7 @@ public class SolderStation : MonoBehaviour
     public bool powerIsEnable { get; set; }
     public bool stationIsEnable { get; set; }
 
+    public int solderTemperature { get; set; }
+
+    
 }

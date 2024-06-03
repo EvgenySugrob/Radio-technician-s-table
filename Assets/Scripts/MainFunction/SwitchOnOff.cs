@@ -5,8 +5,10 @@ using UnityEngine;
 public class SwitchOnOff : MonoBehaviour
 {
     [SerializeField] SolderStation solderStation;
-    [SerializeField] bool isMainSwitch;
+    [SerializeField] Transform onOffButton;
 
+    [Header("Optional")]
+    [SerializeField] bool isMainSwitch;
     [SerializeField] MeshRenderer solderPowerOnIndicator;
     private Vector3 startAngle;
     private Vector3 targetAngle = new Vector3(0,0,0);
@@ -15,7 +17,7 @@ public class SwitchOnOff : MonoBehaviour
 
     private void Start()
     {
-        startAngle = transform.localEulerAngles;
+        startAngle = onOffButton.localEulerAngles;
     }
 
     public void ButtonTurnOnOff()
@@ -35,14 +37,15 @@ public class SwitchOnOff : MonoBehaviour
         if (powerOn)
         {
             powerOn = false;
-            transform.localEulerAngles = startAngle;
+            onOffButton.localEulerAngles = startAngle;
             solderStation.powerIsEnable = powerOn;
             DisableStationPower();
         }
         else
         {
             powerOn = true;
-            transform.localEulerAngles = targetAngle;
+            EnebleStationPower();
+            onOffButton.localEulerAngles = targetAngle;
             solderStation.powerIsEnable =powerOn;
         }
     }
@@ -50,12 +53,16 @@ public class SwitchOnOff : MonoBehaviour
     {
         if (powerOn)
         {
-            DisableStationPower();
+            powerOn = false;
+            onOffButton.localEulerAngles = startAngle;
+            solderStation.stationIsEnable = powerOn;
+
+            solderPowerOnIndicator.material.DisableKeyword("_EMISSION");
         }
         else
         {
             powerOn = true;
-            transform.localEulerAngles = targetAngle;
+            onOffButton.localEulerAngles = targetAngle;
             solderStation.stationIsEnable = powerOn;
 
             if (solderStation.plugInSocket && solderStation.powerIsEnable)
@@ -69,12 +76,15 @@ public class SwitchOnOff : MonoBehaviour
         }
     }
 
-    private void DisableStationPower()
+    public void DisableStationPower()
     {
-        powerOn = false;
-        transform.localEulerAngles = startAngle;
-        solderStation.stationIsEnable = powerOn;
-
         solderPowerOnIndicator.material.DisableKeyword("_EMISSION");
+    }
+    public void EnebleStationPower()
+    {
+        if(solderStation.stationIsEnable)
+        {
+            solderPowerOnIndicator.material.EnableKeyword("_EMISSION");
+        }
     }
 }

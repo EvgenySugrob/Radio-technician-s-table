@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlugActive : MonoBehaviour
 {
     [SerializeField] SolderStation solderStation;
+    [SerializeField] SwitchOnOff stationSwitch;
 
     private BoxCollider boxCollider;
     private Animator animator;
@@ -38,11 +39,13 @@ public class PlugActive : MonoBehaviour
         solderStation.plugInSocket = true;
         boxCollider.enabled = true;
         inSocket= true;
+        stationSwitch.EnebleStationPower();
     }
 
     IEnumerator WaitToEndTurnOffAnimmation()
     {
         solderStation.plugInSocket = false;
+        stationSwitch.DisableStationPower();
         yield return new WaitForSeconds(0.45f);
         boxCollider.enabled = true;
         inSocket= false;
