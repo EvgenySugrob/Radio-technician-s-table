@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class TestDragItem : MonoBehaviour, IDrag
 {
+    [SerializeField] bool permanentKinematic;
     private Rigidbody rb;
     public bool isFreeze { get; set; }
 
@@ -16,10 +17,17 @@ public class TestDragItem : MonoBehaviour, IDrag
     }
     public void onEndDrag()
     {
+        if(permanentKinematic)
+        {
+            rb.useGravity = false;
+            rb.isKinematic = true;
+        }
+        else
+        {
+            rb.useGravity = true;
+        }
 
-        rb.useGravity = true;
         rb.velocity = Vector3.zero;
-
     }
 
     public void onStartDrag()

@@ -35,9 +35,11 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField]private bool isRotation;
     [SerializeField]private GameObject draggedObject;
 
+    [Header("Solder")]
     [SerializeField] SolderStationDetect solderStationDetect;
+    [SerializeField] private bool isHoldingSolder;
 
-    
+
     [Header("Regulator rotation")]
     [SerializeField] Transform regulator;
     TemperatureRegulatorSetting settingRegulator;
@@ -45,13 +47,6 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField]private int curretntIndexTemerature = 0;
     private int stepIndexTemperature = 1;
 
-    [Header("Hold solder input")]
-    [SerializeField] private bool isHoldingSolder;
-    [SerializeField] float holdDuration = 1f;
-    [SerializeField] GameObject progressBarSolder;
-    [SerializeField] Image goodProgress;
-    [SerializeField] Image badProgress;
-    private float holdTimer = 0f;
 
     private void Awake()
     {
@@ -65,6 +60,7 @@ public class DragAndDrop : MonoBehaviour
         mouseInput.Enable();
         mouseRightInput.Enable();
 
+       
         mouseRightInput.performed += MouseRightInput;
         mouseInput.performed += MousePressed;
     }
@@ -87,7 +83,7 @@ public class DragAndDrop : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit,100f,layerMask))
             {
                 if (hit.collider.GetComponent<IDrag>() != null && draggedObject == hit.collider.gameObject)
                 {
@@ -113,9 +109,16 @@ public class DragAndDrop : MonoBehaviour
                 if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null && solderStationDetect.detect == false)
                 {
                     draggedObject = hit.collider.gameObject;
+                    if (draggedObject.GetComponent<SolderInteract>() != null)
+                    {
+                        isHoldMouse = true;
+                        draggedObject.GetComponent<SolderInteract>().EnableSolderDetectionZone();
+                    }
+                    
                     dragAndRotation.SetObjectRotation(draggedObject);
                     isDrag = true;
                     hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
+
                 }
                 else if (draggedObject != null)
                 {
@@ -154,41 +157,11 @@ public class DragAndDrop : MonoBehaviour
                     regulatorCheck = true;
                 }
 
+                
             }
+        }
+    }
 
-        }
-        
-    }
-    public void OnHold(InputAction.CallbackContext obj)
-    {
-        if (obj.started)
-        {
-            Debug.Log("Aga");
-            isHoldingSolder = true;
-        }
-        else if (obj.canceled)
-        {
-            Debug.Log("Cancel");//ResetHold();
-        }
-    }
-    private void ResetHold()
-    {
-        isHoldingSolder = false;
-        holdTimer = 0;                          //заменить на продолжение пайки
-        goodProgress.fillAmount = 0;            //так же
-    }
-    private void HoldSolder()
-    {
-        if (isHoldingSolder) 
-        {
-            holdTimer += Time.deltaTime;
-            goodProgress.fillAmount = holdTimer / holdDuration;
-            if (holdTimer>=holdDuration)
-            {
-                //StartBad progress
-            }
-        }
-    }
 
     private bool NonOpenPopupMenu()
     {
@@ -236,6 +209,7 @@ public class DragAndDrop : MonoBehaviour
         if (isDrag && NonOpenPopupMenu() && checkOpenUIComponent.NonActiveUIComponent())
         {
             DragObject();
+            SolderJobStartStop();
         }
         if(!NonOpenPopupMenu() && draggedObject!=null)
         {
@@ -243,7 +217,7 @@ public class DragAndDrop : MonoBehaviour
         }
 
         //solderJob
-        HoldSolder();
+
 
         //test Regulator Rotation
         if (regulatorCheck)
@@ -287,6 +261,20 @@ public class DragAndDrop : MonoBehaviour
         }
     }
 
+    private void SolderJobStartStop()
+    {
+        if (mouseInput.IsPressed() && isHoldMouse)
+        {
+            isHoldingSolder = true;
+            draggedObject.GetComponent<SolderInteract>().StartSoldering();
+        }
+        else if (mouseInput.IsPressed() == false && isHoldMouse)
+        {
+            isHoldingSolder = false;
+            draggedObject.GetComponent<SolderInteract>().StopSoldering();
+        }
+    }
+
     private void RotationRegulator()
     {
         if (Input.mouseScrollDelta.y > 0 && curretntIndexTemerature < 11)
@@ -314,5 +302,16 @@ public class DragAndDrop : MonoBehaviour
         draggedObject= gameObject;
         isDrag = true;
         dragAndRotation.SetObjectRotation(draggedObject);
+    }
+
+    public void RemoveSolderHand()
+    {
+        draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
+        iDragComponent?.onEndDrag();
+        iDragComponent.isMovebale = false;
+        draggedObject = null;
+        dragAndRotation.SetObjectRotation(draggedObject);
+        isDrag = false;
+        isHoldMouse = false;
     }
 }

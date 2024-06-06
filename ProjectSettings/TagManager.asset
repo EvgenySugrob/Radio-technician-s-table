@@ -7,6 +7,8 @@ TagManager:
   - RadioElement
   - ModelingLegs
   - Leg
+  - SolderStand
+  - ForHolder
   layers:
   - Default
   - TransparentFX
@@ -17,8 +19,8 @@ TagManager:
   - Player
   - Tools
   - Magnet
-  - 
-  - 
+  - SolderStand
+  - Solder
   - 
   - 
   - 

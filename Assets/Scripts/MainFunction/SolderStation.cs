@@ -10,5 +10,15 @@ public class SolderStation : MonoBehaviour
 
     public int solderTemperature { get; set; }
 
-    
+    public bool FunctionalityCheck()
+    {
+        if(plugInSocket && powerIsEnable && stationIsEnable)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

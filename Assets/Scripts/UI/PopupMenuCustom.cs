@@ -25,6 +25,8 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
     [Header("ObjectToCheck")]
     [SerializeField] List<GameObject> objectInteractList;
 
+    private string freezeBtName = "LockObj";
+
     public void OpenPopupMenu(GameObject selectObject, TypeInterectableObject typeInterectable)
     {
         isOpen = true;
@@ -92,18 +94,20 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
 
         if(drag.isFreeze)
         {
-            buttonsMenuList[2].transform.GetChild(1).GetComponent<TMP_Text>().text = "Зафиксировать";
+            Button freezeBt = buttonsMenuList.Find(s => s.name == freezeBtName);
+            freezeBt.transform.GetChild(1).GetComponent<TMP_Text>().text = "Зафиксировать";
             drag.onFreeze(false);
         }
         else
         {
-            buttonsMenuList[2].transform.GetChild(1).GetComponent<TMP_Text>().text = "Разблокирвать";
+            Button freezeBt = buttonsMenuList.Find(s => s.name == freezeBtName);
+            freezeBt.transform.GetChild(1).GetComponent<TMP_Text>().text = "Разблокирвать";
             drag.onFreeze(true);
             dragAndDrop.ClearHand();
         }
         ClosePopupMenu();
     }
-    private void ClosePopupMenu()
+    public void ClosePopupMenu()
     {
         isOpen=false;
         gameObject.SetActive(false);
