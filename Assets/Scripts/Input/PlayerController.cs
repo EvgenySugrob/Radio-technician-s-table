@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     private bool groundedPlayer;
     private InputManager inputManager;
     private Transform cameraTransform;
-
+    [SerializeField]private bool isOrtoView = true;
 
 
     private void Start()
@@ -41,7 +41,15 @@ public class PlayerController : MonoBehaviour
 
             Vector2 movement = inputManager.GetPlayerMovement();
             Vector3 move = new Vector3(movement.x, 0f, movement.y);
-            move = cameraTransform.forward * move.z + cameraTransform.right * move.x;
+            if (isOrtoView)
+            {
+                move = transform.TransformDirection(move);
+            }
+            else
+            {
+                move = cameraTransform.forward * move.z + cameraTransform.right * move.x;
+            }
+            
             move.y = 0f;
             controller.Move(move * Time.deltaTime * playerSpeed);
 

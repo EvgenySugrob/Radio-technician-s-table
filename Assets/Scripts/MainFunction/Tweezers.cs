@@ -89,4 +89,21 @@ public class Tweezers : MonoBehaviour
 
         takeDropRadioElement.AllButtonDisable();
     }
+
+    public bool RadioelementIsNull()
+    {
+        if (radioElement == null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void ActiveOrtoViewBt(bool isActive)
+    {
+        takeDropRadioElement.EnableButtonOrtoView(isActive,isLittleTweezers);
+    }
 }

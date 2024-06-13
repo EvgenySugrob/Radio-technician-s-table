@@ -9,6 +9,10 @@ TagManager:
   - Leg
   - SolderStand
   - ForHolder
+  - Rosin
+  - Soldering
+  - BoarSlotsPlace
+  - Tweezers
   layers:
   - Default
   - TransparentFX
@@ -21,8 +25,8 @@ TagManager:
   - Magnet
   - SolderStand
   - Solder
-  - 
-  - 
+  - BoardSlots
+  - ToolsDetect
   - 
   - 
   - 

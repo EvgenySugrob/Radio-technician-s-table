@@ -20,7 +20,6 @@ public class SolderStandDetect : MonoBehaviour
     {
         if (startDetection && other.GetComponent<SolderInteract>())
         {
-            Debug.Log("Solder Enter");
             returnToStandBt.SetActive(true);
         }
     }
@@ -29,7 +28,6 @@ public class SolderStandDetect : MonoBehaviour
     {
         if (startDetection && other.GetComponent<SolderInteract>())
         {
-            Debug.Log("Solder Stay");
             returnToStandBt.SetActive(true);
         }
     }
@@ -38,7 +36,6 @@ public class SolderStandDetect : MonoBehaviour
     {
         if (startDetection && other.GetComponent<SolderInteract>())
         {
-            Debug.Log("Solder Exit");
             returnToStandBt.SetActive(false);
         }
     }

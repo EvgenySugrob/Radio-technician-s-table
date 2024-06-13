@@ -5,13 +5,38 @@ using UnityEngine.UI;
 
 public class SolderInteract : MonoBehaviour
 {
+    [Header("Preparing for work")]
+    [SerializeField] bool isRosin;
+    [SerializeField] bool isIronTin;
+    [SerializeField] bool isIronTinnig;
+    [SerializeField] bool isRosinCheck;
+   
+    [Header("Soldering ready for work")]
+    [SerializeField] bool isReady;
+    [SerializeField] bool isSolderingPoint;
+
     [Header("Hold solder input")]
     [SerializeField] float holdDuration = 1f;
     [SerializeField] GameObject progressBarSolder;
     [SerializeField] Image goodProgress;
     [SerializeField] Image badProgress;
-    [SerializeField] private float holdTimer = 0f;
+    [SerializeField] float holdTimer = 0f;
     [SerializeField] Transform startStandPosition;
+
+    [Header("RosinTimeParam")]
+    [SerializeField] float rosinHoldDuration = 1f;
+    [SerializeField] float rosinHoldTimer = 0f;
+    [SerializeField] RosinSmokeDirection rosinSmokeDirection;
+
+    [Header("IronTinningColorChange")]
+    [SerializeField] float ironTinningDuration = 2f;
+    [SerializeField] float ironTinningTimer = 0f;
+    [SerializeField] Color startColor;
+    [SerializeField] Color endColor;
+    [SerializeField] private Color mixedColor;
+    [SerializeField] MeshRenderer rosinMeshRenderer;
+    private Transform consumedPart;
+    [SerializeField] float scaleReductionStep = 0.05f;
 
     [Header("MainSolder Settings")]
     [SerializeField] SolderStation solderStation;
@@ -27,6 +52,7 @@ public class SolderInteract : MonoBehaviour
     private void Start()
     {
         solderRb= GetComponent<Rigidbody>();
+        mixedColor = startColor;
     }
 
     public void EnableSolderDetectionZone()
@@ -47,8 +73,9 @@ public class SolderInteract : MonoBehaviour
     {
         if(solderStation.FunctionalityCheck())
         {
-            progressBarSolder.SetActive(true);
+            Rosining();
             HoldSolder();
+            IronTinning();
         }
         else
         {
@@ -60,14 +87,74 @@ public class SolderInteract : MonoBehaviour
         progressBarSolder.SetActive(false);
     }
 
+    public bool GetReadySolder()
+    {
+        return isReady;
+    }
+
+    public void RosinCheck(bool isActive)
+    {
+        isRosinCheck = isActive;
+    }    
+
+    public void IronTinningCheck(bool isActive, Transform solderPart)
+    {
+        if (isRosin)
+        {
+            consumedPart = solderPart;
+            isIronTinnig = isActive;
+        }
+    }
+
+    private void IronTinning()
+    {
+        if(isIronTinnig)
+        {
+            ironTinningTimer += Time.deltaTime;
+            mixedColor = Color.Lerp(mixedColor, endColor, ironTinningTimer);
+            rosinMeshRenderer.material.color = mixedColor;
+
+            Vector3 consumedPartScale = consumedPart.localScale;
+            consumedPartScale.z -= scaleReductionStep * Time.deltaTime;
+            consumedPart.localScale = new Vector3(consumedPart.localScale.x, consumedPart.localScale.y, consumedPartScale.z);
+
+            if (ironTinningTimer>=ironTinningDuration)
+            {
+                isReady = true;
+                Debug.Log("Залудил");
+            }
+        }
+    }
+
+    private void Rosining()
+    {
+        if(isRosinCheck)
+        {
+            rosinSmokeDirection.ActiveSmoke(true);
+            rosinHoldTimer += Time.deltaTime;
+            if (rosinHoldTimer>=rosinHoldDuration)
+            {
+                isRosin = true;
+                rosinSmokeDirection.ActiveSmoke(false);
+                Debug.Log("WellDoneKanifol");
+            }
+        }
+    }
+
     private void HoldSolder()
     {
-        holdTimer += Time.deltaTime;
-        goodProgress.fillAmount = holdTimer / holdDuration;
-        if (holdTimer >= holdDuration)
+        if(isReady && isSolderingPoint)
         {
-            Debug.Log("Cool");//StartBad progress
+            progressBarSolder.SetActive(true);
+            holdTimer += Time.deltaTime;
+            goodProgress.fillAmount = holdTimer / holdDuration;
+            if (holdTimer >= holdDuration)
+            {
+                Debug.Log("Cool");//StartBad progress
+            }
+
         }
+       
     }
 
     private void ResetHold() //Сброс режима пайки, путем заморозки объекта или возвращение его на место
@@ -76,4 +163,6 @@ public class SolderInteract : MonoBehaviour
         goodProgress.fillAmount = 0;            //так же
     }
 
+
+    
 }

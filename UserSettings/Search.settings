@@ -11,6 +11,11 @@ scopes = {
 	"last_search.C87CA1ED" = ""
 	"OpenInspectorPreview.C87CA1ED" = "0"
 	"currentGroup.C87CA1ED" = "performance"
+	"picker_window_position_offset.74AD8FDB" = "881;329;320;550"
+	"picker_search_text.74AD8FDB" = "Smoke"
+	"last_search.74AD8FDB" = "Smoke"
+	"OpenInspectorPreview.74AD8FDB" = "0"
+	"currentGroup.74AD8FDB" = "_group_provider_Texture 2D"
 }
 providers = {
 	adb = {

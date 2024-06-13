@@ -65,7 +65,6 @@ public class DragAndRotation : MonoBehaviour
     {
         if(isRotate)
         {
-            Debug.Log(rotation);
             rotation *= speedRotation;
             draggedObject.transform.Rotate(Vector3.down, rotation.x,Space.World);
             draggedObject.transform.Rotate(mainCamera.transform.right * (isInvert?-1:1), rotation.y,Space.World);

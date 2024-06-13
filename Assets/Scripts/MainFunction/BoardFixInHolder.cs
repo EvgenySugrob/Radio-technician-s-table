@@ -7,6 +7,7 @@ public class BoardFixInHolder : MonoBehaviour
     [SerializeField] GameObject lockBoardBt;
 
     [SerializeField] BoxCollider triggerZone;
+    [SerializeField] BoxCollider boardHolderCollider;
     [SerializeField] bool boardIsLock;
 
 
@@ -43,6 +44,7 @@ public class BoardFixInHolder : MonoBehaviour
     public void DisableTriggerZone(bool isOn)
     {
         triggerZone.enabled = isOn;
+        boardHolderCollider.enabled = !isOn;
         boardIsLock = !isOn;
     }
 }

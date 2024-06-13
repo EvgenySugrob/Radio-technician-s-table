@@ -105,7 +105,7 @@ public class DragAndDrop : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 100f, layerMask))
             {
-                Debug.Log(hit.transform.name);
+                
                 if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null && solderStationDetect.detect == false)
                 {
                     draggedObject = hit.collider.gameObject;
@@ -178,30 +178,38 @@ public class DragAndDrop : MonoBehaviour
     }
     private void DragObject()
     {
-        if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist)
+        if (!isHoldingSolder)
         {
-            currentDistanceToObject += stepsDistance;
-        }
-        if (Input.mouseScrollDelta.y < 0 && currentDistanceToObject > minDist)
-        {
-            currentDistanceToObject -= stepsDistance;
-        }
+            if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist)
+            {
+                currentDistanceToObject += stepsDistance;
+            }
+            if (Input.mouseScrollDelta.y < 0 && currentDistanceToObject > minDist)
+            {
+                currentDistanceToObject -= stepsDistance;
+            }
 
-        draggedObject.TryGetComponent<Rigidbody>(out var rb);
-        draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
-        iDragComponent?.onStartDrag();
+            draggedObject.TryGetComponent<Rigidbody>(out var rb);
+            draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
+            iDragComponent?.onStartDrag();
 
-        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if (rb != null)
-        {
-            Vector3 direction = ray.GetPoint(currentDistanceToObject) - draggedObject.transform.position;
-            rb.velocity = direction * mouseDragPhysicsSpeed;
+            Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (rb != null)
+            {
+                Vector3 direction = ray.GetPoint(currentDistanceToObject) - draggedObject.transform.position;
+                rb.velocity = direction * mouseDragPhysicsSpeed;
+            }
+            else
+            {
+                draggedObject.transform.position = Vector3.SmoothDamp(draggedObject.transform.position, ray.GetPoint(currentDistanceToObject),
+                   ref velocity, mouseDragSpeed);
+            }
         }
         else
         {
-            draggedObject.transform.position = Vector3.SmoothDamp(draggedObject.transform.position, ray.GetPoint(currentDistanceToObject),
-               ref velocity, mouseDragSpeed);
+            draggedObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
         }
+       
     }
 
     private void Update()
