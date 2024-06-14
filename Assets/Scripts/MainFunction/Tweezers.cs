@@ -27,7 +27,12 @@ public class Tweezers : MonoBehaviour
     private Quaternion firstPartStartRotation;
     private Quaternion secondPartStartRotation;
 
-    [SerializeField]private bool isTakeElement;
+    [SerializeField] private bool isTakeElement;
+
+    [Header("BoardSlots")]
+    [SerializeField] List<SlotInfo> slotInfoList;
+    [SerializeField] bool isSlotSet;
+    [SerializeField] Transform nearSlot;
 
     private void Start()
     {
@@ -44,14 +49,26 @@ public class Tweezers : MonoBehaviour
             //takeButton.gameObject.SetActive(true);
             radioElement = other.gameObject;
         }
+
+        if(other.GetComponent<SlotInfo>())
+        {
+            takeDropRadioElement.EnableButtonSlotsInfo(true, isLittleTweezers);
+            SlotInfo slot = other.GetComponent<SlotInfo>();
+            if(!slotInfoList.Contains(slot))
+            {
+                slot.distanceToTweezers = Vector3.Distance(transform.position, slot.transform.position);
+                slotInfoList.Add(slot);
+            }
+            CheckCountSlots();
+        }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "RadioElement")
+        if (slotInfoList.Count>0)
         {
-            
-        } 
+            takeDropRadioElement.EnableButtonSlotsInfo(true, isLittleTweezers);
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -62,6 +79,32 @@ public class Tweezers : MonoBehaviour
             //takeButton.gameObject.SetActive(false);
             //dropButton.gameObject.SetActive(false);
             radioElement = null;
+        }
+
+
+        if (other.GetComponent<SlotInfo>())
+        {
+            takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
+            SlotInfo slot = other.GetComponent<SlotInfo>();
+
+            if (slotInfoList.Contains(slot))
+            {
+                slot.distanceToTweezers = 0;
+                slotInfoList.Remove(slot);
+            }
+            CheckCountSlots();
+        }
+    }
+
+    private void Update()
+    {
+        if(slotInfoList.Count > 0)
+        {
+            foreach (SlotInfo slot in slotInfoList)
+            {
+                slot.distanceToTweezers = Vector3.Distance(transform.position, slot.transform.position);
+            }
+            
         }
     }
 
@@ -106,4 +149,38 @@ public class Tweezers : MonoBehaviour
     {
         takeDropRadioElement.EnableButtonOrtoView(isActive,isLittleTweezers);
     }
+
+    public bool IsLittleTweezers()
+    {
+        return isLittleTweezers;
+    }
+
+
+    public void SlotSet()
+    {
+        CheckCountSlots();
+        transform.TryGetComponent<IDrag>(out var drag);
+        drag.onFreeze(true);
+
+        transform.position = nearSlot.GetChild(0).transform.position;
+        isSlotSet = true;
+        dragAndDrop.ClearHand();
+    }
+    public void SlotRemove()
+    {
+
+    }
+    private void CheckCountSlots()
+    {
+        float nearSlotDistance = 100f;
+        foreach (SlotInfo slot in slotInfoList)
+        {
+            if (slot.distanceToTweezers<nearSlotDistance)
+            {
+                nearSlotDistance = slot.distanceToTweezers;
+                nearSlot = slot.transform;
+            }
+        }
+    }
+
 }

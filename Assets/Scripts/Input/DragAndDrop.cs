@@ -30,10 +30,10 @@ public class DragAndDrop : MonoBehaviour
     private float distanceToObject = 0.5f;
     private Vector3 velocity = Vector3.zero;
     private Camera mainCamera;
-    [SerializeField]private bool isDrag;
-    [SerializeField]private bool isHoldMouse;
-    [SerializeField]private bool isRotation;
-    [SerializeField]private GameObject draggedObject;
+    [SerializeField] private bool isDrag;
+    [SerializeField] private bool isHoldMouse;
+    [SerializeField] private bool isRotation;
+    [SerializeField] private GameObject draggedObject;
 
     [Header("Solder")]
     [SerializeField] SolderStationDetect solderStationDetect;
@@ -43,10 +43,11 @@ public class DragAndDrop : MonoBehaviour
     [Header("Regulator rotation")]
     [SerializeField] Transform regulator;
     TemperatureRegulatorSetting settingRegulator;
-    [SerializeField]private bool regulatorCheck;
-    [SerializeField]private int curretntIndexTemerature = 0;
+    [SerializeField] private bool regulatorCheck;
+    [SerializeField] private int curretntIndexTemerature = 0;
     private int stepIndexTemperature = 1;
 
+    [SerializeField] PlayerController playerController;
 
     private void Awake()
     {
@@ -131,7 +132,8 @@ public class DragAndDrop : MonoBehaviour
                     //hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
                 }
 
-                if (hit.collider.GetComponent<SolderStationDetect>() != null && draggedObject == null && solderStationDetect.detect == false)
+                if (hit.collider.GetComponent<SolderStationDetect>() != null && draggedObject == null 
+                    && solderStationDetect.detect == false && playerController.IsActiveOrtoView() == false)
                 {
                     hit.collider.GetComponent<SolderStationDetect>().StartMoveToStation();
                 }
@@ -146,7 +148,8 @@ public class DragAndDrop : MonoBehaviour
                     hit.collider.GetComponent<SwitchOnOff>().ButtonTurnOnOff();
                 }
 
-                if (hit.collider.GetComponent<TemperatureRegulatorSetting>() != null && draggedObject == null && solderStationDetect.detect == true)
+                if (hit.collider.GetComponent<TemperatureRegulatorSetting>() != null && draggedObject == null 
+                    && solderStationDetect.detect == true)
                 {
                     //    regulator = hit.collider.GetComponent<TemperatureRegulatorSetting>().transform;
 
@@ -180,11 +183,11 @@ public class DragAndDrop : MonoBehaviour
     {
         if (!isHoldingSolder)
         {
-            if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist)
+            if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist && playerController.IsActiveOrtoView() == false)
             {
                 currentDistanceToObject += stepsDistance;
             }
-            if (Input.mouseScrollDelta.y < 0 && currentDistanceToObject > minDist)
+            if (Input.mouseScrollDelta.y < 0 && currentDistanceToObject > minDist && playerController.IsActiveOrtoView() == false)
             {
                 currentDistanceToObject -= stepsDistance;
             }
@@ -321,5 +324,23 @@ public class DragAndDrop : MonoBehaviour
         dragAndRotation.SetObjectRotation(draggedObject);
         isDrag = false;
         isHoldMouse = false;
+    }
+
+    public GameObject GetDraggedObject()
+    {
+        return draggedObject;
+    }
+
+    public void OrtoViewParam()
+    {
+        if (draggedObject.GetComponent<Tweezers>().IsLittleTweezers())
+        {
+            currentDistanceToObject = 0.19f;
+        }
+    }
+
+    public void TweezersSlotSet()
+    {
+
     }
 }

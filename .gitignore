@@ -5,7 +5,7 @@
 [Bb]uild/
 [Ii]nstall/Installer
 /Library/
-###[Pp]ackages/
+[Pp]ackages/
 [Ll]ocal[Cc]ache/
 [Oo]bj/
 [Tt]emp/

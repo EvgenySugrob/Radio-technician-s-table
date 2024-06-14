@@ -76,4 +76,14 @@ public class PlayerController : MonoBehaviour
         }
         return isClose;
     }
+
+    public bool IsActiveOrtoView()
+    {
+        return isOrtoView;
+    }
+
+    public void ActiveOrtoView(bool isActive)
+    {
+        isOrtoView= isActive;
+    }
 }

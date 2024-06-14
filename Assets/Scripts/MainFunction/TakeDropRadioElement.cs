@@ -8,11 +8,15 @@ public class TakeDropRadioElement : MonoBehaviour
     [SerializeField] GameObject takeButton;
     [SerializeField] GameObject dropButton;
     [SerializeField] GameObject ortoViewGo;
+    [SerializeField] GameObject boardSlotSet;
+    [SerializeField] GameObject boardSlotRemove;
 
     [Header("LittleTweezersButton")]
     [SerializeField] GameObject littleTakeButton;
     [SerializeField] GameObject littleDropButton;
     [SerializeField] GameObject littleOrtoViewGo;
+    [SerializeField] GameObject littleBoardSlotSet;
+    [SerializeField] GameObject littleBoardSlotRemove;
 
     public void TakeDropButtonActivate(bool isTakeElement,bool isLittleTweezers)
     {
@@ -35,6 +39,18 @@ public class TakeDropRadioElement : MonoBehaviour
         else
         {
             OrtoViewBtTweezers(isActive);
+        }
+    }
+
+    public void EnableButtonSlotsInfo(bool isActive,bool isLittleTweezers)
+    {
+        if (isLittleTweezers)
+        {
+            LittleSlotSetBt(isActive);
+        }
+        else
+        {
+            SlotSetBt(isActive);
         }
     }
 
@@ -95,6 +111,15 @@ public class TakeDropRadioElement : MonoBehaviour
     private void OrtoViewBtTweezers(bool isActive)
     {
         ortoViewGo.SetActive(isActive);
+    }
+
+    private void SlotSetBt(bool isActive)
+    {
+        boardSlotSet.SetActive(isActive);
+    }
+    private void LittleSlotSetBt(bool isActive)
+    {
+        littleBoardSlotSet.SetActive(isActive);
     }
 
     public void DisableAllOrtoViewBt()
