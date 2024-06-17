@@ -5,7 +5,6 @@ using UnityEngine;
 public class SlotInfo : MonoBehaviour
 {
     public bool isOccupied { set; get; }
-    public float distanceToTweezers { set; get; }
 
     [SerializeField] Transform capasitorTransform;
     [SerializeField] Transform resistTransform;
@@ -17,5 +16,31 @@ public class SlotInfo : MonoBehaviour
         boxCollider = GetComponent<BoxCollider>();
         resistTransform = transform.GetChild(0).transform;
         capasitorTransform = transform.GetChild(1).transform;
+    }
+
+    public Transform GetRadioElementTypePosition(TypeRadioElement typeRadioElement)
+    {
+        switch (typeRadioElement)
+        {
+            case TypeRadioElement.SMDCapacitor:
+                return capasitorTransform;
+
+            case TypeRadioElement.SMDResist:
+                return resistTransform;
+                
+            case TypeRadioElement.Capacitor:
+                break;
+
+            case TypeRadioElement.FilmResist:
+                break;
+
+            case TypeRadioElement.None:
+                break;
+        }
+        return resistTransform;
+    }
+    public void OccupiedSlot(bool isTrue)
+    {
+        isOccupied = isTrue;
     }
 }

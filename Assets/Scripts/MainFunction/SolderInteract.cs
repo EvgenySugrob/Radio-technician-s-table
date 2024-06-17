@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,10 +11,12 @@ public class SolderInteract : MonoBehaviour
     [SerializeField] bool isIronTin;
     [SerializeField] bool isIronTinnig;
     [SerializeField] bool isRosinCheck;
-   
+
     [Header("Soldering ready for work")]
     [SerializeField] bool isReady;
+    [SerializeField] bool thereIsSolder;
     [SerializeField] bool isSolderingPoint;
+
 
     [Header("Hold solder input")]
     [SerializeField] float holdDuration = 1f;
@@ -38,6 +41,13 @@ public class SolderInteract : MonoBehaviour
     private Transform consumedPart;
     [SerializeField] float scaleReductionStep = 0.05f;
 
+    [Header("SolderOnIronTip")]
+    [SerializeField] float duration = 1f;
+    [SerializeField] Transform solderOnIronTip;
+    //private float maxSizeSolderOnTip = 1f;
+    //private float minSizeSolderOnTip = 0f;
+    private float timer = 0;
+
     [Header("MainSolder Settings")]
     [SerializeField] SolderStation solderStation;
 
@@ -47,12 +57,20 @@ public class SolderInteract : MonoBehaviour
     [Header("Inputs")]
     [SerializeField] DragAndDrop dragAndDrop;
 
+    [Header("SolderDetectionSlot")]
+    [SerializeField] Transform radioelementSlot;
+
     private Rigidbody solderRb;
 
     private void Start()
     {
         solderRb= GetComponent<Rigidbody>();
         mixedColor = startColor;
+    }
+
+    public void SetRadioelement(Transform slot)
+    {
+        radioelementSlot = slot;
     }
 
     public void EnableSolderDetectionZone()
@@ -74,8 +92,9 @@ public class SolderInteract : MonoBehaviour
         if(solderStation.FunctionalityCheck())
         {
             Rosining();
-            HoldSolder();
             IronTinning();
+            TakingSolder();
+            HoldSolder();
         }
         else
         {
@@ -95,7 +114,12 @@ public class SolderInteract : MonoBehaviour
     public void RosinCheck(bool isActive)
     {
         isRosinCheck = isActive;
-    }    
+    } 
+    
+    public void IsSolderingPointEnable(bool IsEnable)
+    {
+        isSolderingPoint = IsEnable;
+    }
 
     public void IronTinningCheck(bool isActive, Transform solderPart)
     {
@@ -121,11 +145,11 @@ public class SolderInteract : MonoBehaviour
             if (ironTinningTimer>=ironTinningDuration)
             {
                 isReady = true;
+                isIronTin = true;
                 Debug.Log("Залудил");
             }
         }
     }
-
     private void Rosining()
     {
         if(isRosinCheck)
@@ -140,23 +164,40 @@ public class SolderInteract : MonoBehaviour
             }
         }
     }
-
     private void HoldSolder()
     {
-        if(isReady && isSolderingPoint)
+        if(thereIsSolder && isSolderingPoint)
         {
+            Vector3 currentScaleSolderOnIronTip = solderOnIronTip.localScale;
             progressBarSolder.SetActive(true);
             holdTimer += Time.deltaTime;
+
+            Vector3 newScale = Vector3.Lerp(currentScaleSolderOnIronTip, Vector3.zero, holdTimer);
             goodProgress.fillAmount = holdTimer / holdDuration;
             if (holdTimer >= holdDuration)
             {
+                thereIsSolder = false;
                 Debug.Log("Cool");//StartBad progress
             }
 
         }
        
     }
-
+    private void TakingSolder()
+    {
+        if(isReady && isIronTin && isRosin)
+        {
+            Vector3 currentScale = solderOnIronTip.localScale;
+            timer += Time.deltaTime;
+            Vector3 newScale = Vector3.Lerp(currentScale, Vector3.one, timer);
+            solderOnIronTip.localScale = newScale;
+            if(timer>=duration)
+            {
+                Debug.Log("Припой на паяльнике");
+                thereIsSolder = true;
+            }
+        }
+    }
     private void ResetHold() //Сброс режима пайки, путем заморозки объекта или возвращение его на место
     {
         holdTimer = 0;                          //заменить на продолжение пайки
@@ -164,5 +205,8 @@ public class SolderInteract : MonoBehaviour
     }
 
 
-    
+    public void StartSolderingOnSlot()
+    {
+
+    }
 }

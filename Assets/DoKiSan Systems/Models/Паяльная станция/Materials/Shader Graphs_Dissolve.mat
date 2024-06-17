@@ -57,9 +57,9 @@ Material:
     m_Ints: []
     m_Floats:
     - REVERSE_DIRECTION: 1
-    - _CutoffHeight: 0.04
-    - _GlowThickness: 0.0001
-    - _NoiseScale: 0
+    - _CutoffHeight: -0.75
+    - _GlowThickness: 0.001
+    - _NoiseScale: 0.97
     - _NoiseStrength: 0
     - _QueueControl: 0
     - _QueueOffset: 0

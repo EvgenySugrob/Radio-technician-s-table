@@ -17,8 +17,8 @@ public class OrtoViewCameraPosition : MonoBehaviour
     [Header("BoardPoint")]
     [SerializeField] Transform boardOrtoViewPosition;
     [SerializeField] BoxCollider triggerZonePopupBt;
-    [SerializeField] List<BoxCollider> slotColliderList;
     [SerializeField] Tweezers tweezers;
+    [SerializeField] List<GameObject> boardSlots;
 
     [Header("UI")]
     [SerializeField] GameObject buttonBack;
@@ -31,9 +31,9 @@ public class OrtoViewCameraPosition : MonoBehaviour
     {
         tweezers = dragAndDrop.GetDraggedObject().GetComponent<Tweezers>();
         triggerZonePopupBt.enabled = false;
-        foreach (BoxCollider boxCollider in slotColliderList)
+        foreach (GameObject slotsGroup in boardSlots) 
         {
-            boxCollider.enabled = true;
+            slotsGroup.SetActive(true);
         }
         tweezers.ActiveOrtoViewBt(false);
 
@@ -96,9 +96,9 @@ public class OrtoViewCameraPosition : MonoBehaviour
             isOrto = false;
 
             player.GetComponent<PlayerController>().ActiveOrtoView(false);
-            foreach (BoxCollider boxCollider in slotColliderList)
+            foreach (GameObject slotsGroup in boardSlots)
             {
-                boxCollider.enabled = false;
+                slotsGroup.SetActive(false);
             }
             triggerZonePopupBt.enabled = true;
             virtualCamera.enabled = true;

@@ -3,8 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TypeRadioElement
+{
+    SMDCapacitor,
+    SMDResist,
+    Capacitor,
+    FilmResist,
+    None
+}
 public class PrefabRisistNominalSetting : MonoBehaviour
 {
+    public TypeRadioElement typeRadioElement;
     [SerializeField] MeshRenderer meshRenderer;
 
     [Header("Colors for resist")]

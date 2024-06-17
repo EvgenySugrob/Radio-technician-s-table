@@ -30,9 +30,10 @@ public class Tweezers : MonoBehaviour
     [SerializeField] private bool isTakeElement;
 
     [Header("BoardSlots")]
-    [SerializeField] List<SlotInfo> slotInfoList;
     [SerializeField] bool isSlotSet;
     [SerializeField] Transform nearSlot;
+    [SerializeField] Transform raycastPoint;
+    [SerializeField] LayerMask layerMask;
 
     private void Start()
     {
@@ -46,29 +47,13 @@ public class Tweezers : MonoBehaviour
         {
             Debug.Log("TW+");
             takeDropRadioElement.TakeDropButtonActivate(isTakeElement, isLittleTweezers);
-            //takeButton.gameObject.SetActive(true);
             radioElement = other.gameObject;
-        }
-
-        if(other.GetComponent<SlotInfo>())
-        {
-            takeDropRadioElement.EnableButtonSlotsInfo(true, isLittleTweezers);
-            SlotInfo slot = other.GetComponent<SlotInfo>();
-            if(!slotInfoList.Contains(slot))
-            {
-                slot.distanceToTweezers = Vector3.Distance(transform.position, slot.transform.position);
-                slotInfoList.Add(slot);
-            }
-            CheckCountSlots();
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (slotInfoList.Count>0)
-        {
-            takeDropRadioElement.EnableButtonSlotsInfo(true, isLittleTweezers);
-        }
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -76,35 +61,29 @@ public class Tweezers : MonoBehaviour
         if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers)
         {
             takeDropRadioElement.AllButtonDisable();
-            //takeButton.gameObject.SetActive(false);
-            //dropButton.gameObject.SetActive(false);
             radioElement = null;
-        }
-
-
-        if (other.GetComponent<SlotInfo>())
-        {
-            takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
-            SlotInfo slot = other.GetComponent<SlotInfo>();
-
-            if (slotInfoList.Contains(slot))
-            {
-                slot.distanceToTweezers = 0;
-                slotInfoList.Remove(slot);
-            }
-            CheckCountSlots();
         }
     }
 
     private void Update()
     {
-        if(slotInfoList.Count > 0)
+        if(isSlotSet == false)
         {
-            foreach (SlotInfo slot in slotInfoList)
+            RaycastHit hit;
+            if (Physics.Raycast(raycastPoint.position, raycastPoint.TransformDirection(Vector3.forward), out hit, 10f, layerMask))
             {
-                slot.distanceToTweezers = Vector3.Distance(transform.position, slot.transform.position);
+                if (hit.collider.GetComponent<SlotInfo>())
+                {
+                    nearSlot = hit.collider.transform;
+                    takeDropRadioElement.EnableButtonSlotsInfo(true, isLittleTweezers);
+
+                }
             }
-            
+            else
+            {
+                takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
+                nearSlot = null;
+            }
         }
     }
 
@@ -119,7 +98,6 @@ public class Tweezers : MonoBehaviour
         isTakeElement = true;
 
         takeDropRadioElement.AllButtonDisable();
-        //takeDropRadioElement.TakeDropButtonActivate(isTakeElement, isLittleTweezers);
     }
     public void DropElement()
     {
@@ -158,29 +136,22 @@ public class Tweezers : MonoBehaviour
 
     public void SlotSet()
     {
-        CheckCountSlots();
         transform.TryGetComponent<IDrag>(out var drag);
         drag.onFreeze(true);
 
-        transform.position = nearSlot.GetChild(0).transform.position;
         isSlotSet = true;
+        takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
+
+        SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
+        TypeRadioElement type = radioElement.GetComponent<PrefabRisistNominalSetting>().typeRadioElement;
+
+        transform.position = slot.GetRadioElementTypePosition(type).position;
+        //transform.parent = slot.GetRadioElementTypePosition(type); подумать??
+        slot.OccupiedSlot(true);
         dragAndDrop.ClearHand();
     }
     public void SlotRemove()
     {
 
     }
-    private void CheckCountSlots()
-    {
-        float nearSlotDistance = 100f;
-        foreach (SlotInfo slot in slotInfoList)
-        {
-            if (slot.distanceToTweezers<nearSlotDistance)
-            {
-                nearSlotDistance = slot.distanceToTweezers;
-                nearSlot = slot.transform;
-            }
-        }
-    }
-
 }
