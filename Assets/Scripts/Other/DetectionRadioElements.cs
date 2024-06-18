@@ -6,9 +6,9 @@ public class DetectionRadioElements : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Tweezers")
+        Debug.Log(other.name + " Без условий");
+        if (other.tag == "Tweezers")
         {
-            
             Tweezers tweezers = other.GetComponent<Tweezers>();
             Debug.Log(other.name + " " + tweezers.RadioelementIsNull());
             if (tweezers.RadioelementIsNull() == false)
@@ -16,6 +16,11 @@ public class DetectionRadioElements : MonoBehaviour
                 Debug.Log(other.name + " " + "Кнопка активна");
                 tweezers.ActiveOrtoViewBt(true);
             }
+        }
+        else if(other.tag == "Solder")
+        {
+            Debug.Log(other.name + " Вход");
+            other.GetComponent<SolderInteract>().ActiveOrtoBt(true);
         }
     }
 
@@ -30,6 +35,10 @@ public class DetectionRadioElements : MonoBehaviour
                 tweezers.ActiveOrtoViewBt(true);
             }
         }
+        else if (other.tag == "Solder")
+        {
+            other.GetComponent<SolderInteract>().ActiveOrtoBt(true);
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -42,6 +51,11 @@ public class DetectionRadioElements : MonoBehaviour
             {
                 tweezers.ActiveOrtoViewBt(false);
             }
+        }
+        else if (other.tag == "Solder")
+        {
+            Debug.Log(other.name + " Выход");
+            other.GetComponent<SolderInteract>().ActiveOrtoBt(false);
         }
     }
 }

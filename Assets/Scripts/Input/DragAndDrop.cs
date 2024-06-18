@@ -38,6 +38,7 @@ public class DragAndDrop : MonoBehaviour
     [Header("Solder")]
     [SerializeField] SolderStationDetect solderStationDetect;
     [SerializeField] private bool isHoldingSolder;
+    [SerializeField] float ortoViewDistance = 1f;
 
 
     [Header("Regulator rotation")]
@@ -333,9 +334,17 @@ public class DragAndDrop : MonoBehaviour
 
     public void OrtoViewParam()
     {
-        if (draggedObject.GetComponent<Tweezers>().IsLittleTweezers())
+        if (draggedObject.GetComponent<Tweezers>())
         {
-            currentDistanceToObject = 0.19f;
+            if(draggedObject.GetComponent<Tweezers>().IsLittleTweezers())
+            {
+                currentDistanceToObject = 0.19f;
+            }
+            
+        }
+        else if (draggedObject.GetComponent<SolderInteract>())
+        {
+            currentDistanceToObject = ortoViewDistance;
         }
     }
 

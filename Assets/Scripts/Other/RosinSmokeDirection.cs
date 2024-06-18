@@ -14,9 +14,8 @@ public class RosinSmokeDirection : MonoBehaviour
     }
     private void Update()
     {
-        Vector3 targetPoint = target.position;
-        targetPoint.z = transform.position.z;
-        transform.LookAt(targetPoint);
+        Vector3 targetPosition = new Vector3(transform.position.x, target.position.y, transform.position.z);
+        transform.LookAt(targetPosition);
     }
 
     public void ActiveSmoke(bool isActive)

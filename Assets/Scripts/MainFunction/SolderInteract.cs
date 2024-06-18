@@ -58,6 +58,8 @@ public class SolderInteract : MonoBehaviour
     [SerializeField] DragAndDrop dragAndDrop;
 
     [Header("SolderDetectionSlot")]
+    [SerializeField] GameObject ortoViewBt;
+    [SerializeField] SolderSlotsDetect solderSlotsDetect;
     [SerializeField] Transform radioelementSlot;
 
     private Rigidbody solderRb;
@@ -71,6 +73,7 @@ public class SolderInteract : MonoBehaviour
     public void SetRadioelement(Transform slot)
     {
         radioelementSlot = slot;
+        radioelementSlot.GetComponent<LegsSolderingProgress>().SetFinalProgress(holdDuration);
     }
 
     public void EnableSolderDetectionZone()
@@ -134,13 +137,17 @@ public class SolderInteract : MonoBehaviour
     {
         if(isIronTinnig)
         {
+            Debug.Log("Лужение");
             ironTinningTimer += Time.deltaTime;
             mixedColor = Color.Lerp(mixedColor, endColor, ironTinningTimer);
             rosinMeshRenderer.material.color = mixedColor;
-
-            Vector3 consumedPartScale = consumedPart.localScale;
-            consumedPartScale.z -= scaleReductionStep * Time.deltaTime;
-            consumedPart.localScale = new Vector3(consumedPart.localScale.x, consumedPart.localScale.y, consumedPartScale.z);
+            
+            if(isReady ==false)
+            {
+                Vector3 consumedPartScale = consumedPart.localScale;
+                consumedPartScale.z -= scaleReductionStep * Time.deltaTime;
+                consumedPart.localScale = new Vector3(consumedPart.localScale.x, consumedPart.localScale.y, consumedPartScale.z);
+            }
 
             if (ironTinningTimer>=ironTinningDuration)
             {
@@ -154,6 +161,7 @@ public class SolderInteract : MonoBehaviour
     {
         if(isRosinCheck)
         {
+            Debug.Log("Канифоль");
             rosinSmokeDirection.ActiveSmoke(true);
             rosinHoldTimer += Time.deltaTime;
             if (rosinHoldTimer>=rosinHoldDuration)
@@ -166,17 +174,24 @@ public class SolderInteract : MonoBehaviour
     }
     private void HoldSolder()
     {
-        if(thereIsSolder && isSolderingPoint)
+        if(thereIsSolder && isSolderingPoint) //Выполняется только при пайке для распайки другое условие
         {
+            Debug.Log("Пайка");
+            float currentProgress = radioelementSlot.GetComponent<LegsSolderingProgress>().SolderingLegsElement();
+            holdTimer += Time.deltaTime;
+            //holdTimer = currentProgress;
             Vector3 currentScaleSolderOnIronTip = solderOnIronTip.localScale;
             progressBarSolder.SetActive(true);
-            holdTimer += Time.deltaTime;
 
-            Vector3 newScale = Vector3.Lerp(currentScaleSolderOnIronTip, Vector3.zero, holdTimer);
-            goodProgress.fillAmount = holdTimer / holdDuration;
+            Vector3 newScale = Vector3.Lerp(currentScaleSolderOnIronTip, Vector3.zero, currentProgress);
+            solderOnIronTip.localScale = newScale;
+
+            goodProgress.fillAmount = currentProgress;
             if (holdTimer >= holdDuration)
             {
                 thereIsSolder = false;
+                isIronTin= false;
+                timer = 0;
                 Debug.Log("Cool");//StartBad progress
             }
 
@@ -185,8 +200,9 @@ public class SolderInteract : MonoBehaviour
     }
     private void TakingSolder()
     {
-        if(isReady && isIronTin && isRosin)
+        if(isReady && isIronTin && isRosin && isIronTinnig)
         {
+            Debug.Log("Забор припоя");
             Vector3 currentScale = solderOnIronTip.localScale;
             timer += Time.deltaTime;
             Vector3 newScale = Vector3.Lerp(currentScale, Vector3.one, timer);
@@ -195,6 +211,7 @@ public class SolderInteract : MonoBehaviour
             {
                 Debug.Log("Припой на паяльнике");
                 thereIsSolder = true;
+                holdTimer = 0;
             }
         }
     }
@@ -205,7 +222,16 @@ public class SolderInteract : MonoBehaviour
     }
 
 
-    public void StartSolderingOnSlot()
+    public void StartSolderingDetectionSlot(bool isActive)
+    {
+        solderSlotsDetect.DetecActive(isActive);
+    }
+    public void ActiveOrtoBt(bool isGo)
+    {
+        ortoViewBt.SetActive(isGo);
+    }
+
+    public void SetHoldTimer()
     {
 
     }

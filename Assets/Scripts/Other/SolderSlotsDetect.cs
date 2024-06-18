@@ -19,26 +19,39 @@ public class SolderSlotsDetect : MonoBehaviour
 
     private void Update()
     {
-        Vector3 targetPoint = targetLock.position;
-        targetPoint.z = transform.position.z;
-        transform.LookAt(targetPoint);
+        Vector3 targetPosition = new Vector3(transform.position.x, targetLock.position.y, transform.position.z);
+        transform.LookAt(targetPosition);
+ 
+        Debug.DrawRay(transform.position, transform.forward, Color.green,distance, true);
 
-        if(detectActivation)
+        if (detectActivation)
         {
             RaycastHit hit;
             if(Physics.Raycast(transform.position,transform.forward,out hit,distance,layerMask))
             {
-                if(hit.collider.GetComponent<SlotInfo>())
+                if(hit.collider.tag == "LegsSoldering" )
                 {
+                    Debug.Log("Нашел НОГУ");
                     solderInteract.SetRadioelement(hit.collider.transform);
-                    startSolderingBt.SetActive(true);
+                    solderInteract.IsSolderingPointEnable(true);
+                }
+                else
+                {
+                    Debug.Log("Потерял НОГУ");
+                    solderInteract.IsSolderingPointEnable(false);
+                    solderInteract.SetRadioelement(null);
                 }
             }
             else
             {
-                startSolderingBt.SetActive(false);
-                solderInteract.SetRadioelement(null);
+                Debug.Log("Потерял НОГУ");
+                solderInteract.IsSolderingPointEnable(false);
             }
         }
+    }
+
+    public void DetecActive(bool isActive)
+    {
+        detectActivation= isActive;
     }
 }

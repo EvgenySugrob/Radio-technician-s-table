@@ -19,6 +19,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
     [SerializeField] BoxCollider triggerZonePopupBt;
     [SerializeField] Tweezers tweezers;
     [SerializeField] List<GameObject> boardSlots;
+    private GameObject objectInHandNow;
 
     [Header("UI")]
     [SerializeField] GameObject buttonBack;
@@ -29,13 +30,21 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
     public void StartOrtoView()
     {
-        tweezers = dragAndDrop.GetDraggedObject().GetComponent<Tweezers>();
+        objectInHandNow = dragAndDrop.GetDraggedObject();
+        if(objectInHandNow.GetComponent<Tweezers>())
+        {
+            TweezersInHand();
+        }
+        if(objectInHandNow.GetComponent<SolderInteract>())
+        {
+            SolderInHand();
+        }
         triggerZonePopupBt.enabled = false;
         foreach (GameObject slotsGroup in boardSlots) 
         {
             slotsGroup.SetActive(true);
         }
-        tweezers.ActiveOrtoViewBt(false);
+       
 
         virtualCamera.enabled = false;
         startPosition = player.position;
@@ -43,9 +52,26 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
         isMove = true;
     }
-
+    private void SolderInHand()
+    {
+        objectInHandNow.GetComponent<SolderInteract>().ActiveOrtoBt(false);
+        objectInHandNow.GetComponent<SolderInteract>().StartSolderingDetectionSlot(true);
+    }
+    private void TweezersInHand()
+    {
+        tweezers = dragAndDrop.GetDraggedObject().GetComponent<Tweezers>();
+        tweezers.ActiveOrtoViewBt(false);
+    }
+    private void DisableSolderDetection()
+    {
+        objectInHandNow.GetComponent<SolderInteract>().StartSolderingDetectionSlot(false);
+    }
     public void ReturnToMainView()
     {
+        if(objectInHandNow.GetComponent<SolderInteract>())
+        {
+            DisableSolderDetection();
+        }
         playerCamera.GetComponent<Camera>().orthographic = false;
         buttonBack.SetActive(false);
         isMove = true;
@@ -103,6 +129,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
             triggerZonePopupBt.enabled = true;
             virtualCamera.enabled = true;
             tweezers = null;
+            objectInHandNow = null;
         }
     }
 }
