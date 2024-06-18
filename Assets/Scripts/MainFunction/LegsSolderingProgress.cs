@@ -10,6 +10,10 @@ public class LegsSolderingProgress : MonoBehaviour
     [SerializeField] bool progressDone;
     private float amountForBar;
 
+    private void Awake()
+    {
+        solderLegsScale = transform.GetChild(0).transform;
+    }
     public void SetFinalProgress(float duration)
     {
         finalProgress= duration;

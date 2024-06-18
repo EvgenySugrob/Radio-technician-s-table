@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7913411439238147434}
+  - component: {fileID: 7995390291535073058}
   m_Layer: 0
   m_Name: RightSolder
   m_TagString: Untagged
@@ -26,12 +27,33 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.000012, y: -0.000467, z: -0.001639}
-  m_LocalScale: {x: 0.00075, y: 0.00075, z: 0.00075}
+  m_LocalScale: {x: 0.00075, y: 0.0019, z: 0.00075}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1724377545220877709}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7995390291535073058
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3466310529631251304}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.1190035, y: 1.1912302, z: 1.5363266}
+  m_Center: {x: 0.007459894, y: 0.44068223, z: 0.2681628}
 --- !u!1 &6056865642678881789
 GameObject:
   m_ObjectHideFlags: 0
