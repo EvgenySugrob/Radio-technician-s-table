@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class TestDragItem : MonoBehaviour, IDrag
+public class DragItem : MonoBehaviour, IDrag
 {
     [SerializeField] bool permanentKinematic;
     private Rigidbody rb;

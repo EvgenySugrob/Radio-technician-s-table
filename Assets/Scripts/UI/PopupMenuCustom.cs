@@ -64,7 +64,7 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             dragAndRotation.enabled = true;
             draggedObject.GetComponent<RotationItem>()?.onStartRotation();
             dragAndDrop.enabled = false;
-            draggedObject.GetComponent<TestDragItem>()?.onEndDrag();
+            draggedObject.GetComponent<DragItem>()?.onEndDrag();
         }
         else 
         {
@@ -73,7 +73,7 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             dragAndRotation.enabled = false;
             draggedObject.GetComponent<RotationItem>()?.onStopRotation();
             dragAndDrop.enabled = true;
-            draggedObject.GetComponent<TestDragItem>()?.onStartDrag();
+            draggedObject.GetComponent<DragItem>()?.onStartDrag();
         }
         ClosePopupMenu();
     }
