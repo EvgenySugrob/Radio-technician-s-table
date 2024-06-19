@@ -25,6 +25,7 @@ public class SolderInteract : MonoBehaviour
     [SerializeField] Image badProgress;
     [SerializeField] float holdTimer = 0f;
     [SerializeField] Transform startStandPosition;
+    private RectTransform progressBarRect;
 
     [Header("RosinTimeParam")]
     [SerializeField] float rosinHoldDuration = 1f;
@@ -68,6 +69,7 @@ public class SolderInteract : MonoBehaviour
     {
         solderRb= GetComponent<Rigidbody>();
         mixedColor = startColor;
+        progressBarRect = progressBarSolder.GetComponent<RectTransform>();
     }
 
     public void SetRadioelement(Transform slot)
@@ -181,6 +183,12 @@ public class SolderInteract : MonoBehaviour
             holdTimer += Time.deltaTime;
             //holdTimer = currentProgress;
             Vector3 currentScaleSolderOnIronTip = solderOnIronTip.localScale;
+
+            Vector3 desiredPosition = solderOnIronTip.position;
+            Vector3 screenPosition = Camera.main.WorldToScreenPoint(desiredPosition);
+            screenPosition.x = Mathf.Clamp(screenPosition.x, 0, Screen.width);
+            screenPosition.y = Mathf.Clamp(screenPosition.y, 0, Screen.height);
+            progressBarRect.position = screenPosition;
             progressBarSolder.SetActive(true);
 
             Vector3 newScale = Vector3.Lerp(currentScaleSolderOnIronTip, Vector3.zero, currentProgress);

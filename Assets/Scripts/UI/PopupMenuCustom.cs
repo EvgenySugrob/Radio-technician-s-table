@@ -136,4 +136,22 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
                 break;
         }
     }
+
+    public void ExtrimeFreezeObj(GameObject gameObject)
+    {
+        gameObject.TryGetComponent<IDrag>(out var drag);
+
+        if (drag.isFreeze)
+        {
+            Button freezeBt = buttonsMenuList.Find(s => s.name == freezeBtName);
+            freezeBt.transform.GetChild(1).GetComponent<TMP_Text>().text = "Зафиксировать";
+            drag.onFreeze(false);
+        }
+        else
+        {
+            Button freezeBt = buttonsMenuList.Find(s => s.name == freezeBtName);
+            freezeBt.transform.GetChild(1).GetComponent<TMP_Text>().text = "Разблокирвать";
+            drag.onFreeze(true);
+        }
+    }
 }

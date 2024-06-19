@@ -6,8 +6,13 @@ public class SlotInfo : MonoBehaviour
 {
     public bool isOccupied { set; get; }
 
+    [SerializeField] GameObject radioelementInSlot;
     [SerializeField] Transform capasitorTransform;
     [SerializeField] Transform resistTransform;
+    [SerializeField] Transform defaultCapasitor;
+    [SerializeField] Transform defaultResist;
+
+    [SerializeField] Transform boardParent;
     private BoxCollider boxCollider;
 
 
@@ -16,31 +21,44 @@ public class SlotInfo : MonoBehaviour
         boxCollider = GetComponent<BoxCollider>();
         resistTransform = transform.GetChild(0).transform;
         capasitorTransform = transform.GetChild(1).transform;
+        boardParent = transform.parent.parent;
     }
 
-    public Transform GetRadioElementTypePosition(TypeRadioElement typeRadioElement)
+    public Transform GetRadioElementTypePosition(TypeRadioElement typeRadioElement, GameObject radioelement)
     {
+        Transform radioelementTransform = capasitorTransform;
+        radioelementInSlot = radioelement;
         switch (typeRadioElement)
         {
             case TypeRadioElement.SMDCapacitor:
-                return capasitorTransform;
+                radioelementTransform = capasitorTransform;
+                break;
 
             case TypeRadioElement.SMDResist:
-                return resistTransform;
+                radioelementTransform = resistTransform;
+                break;
                 
             case TypeRadioElement.Capacitor:
+                radioelementTransform = defaultCapasitor;
                 break;
 
             case TypeRadioElement.FilmResist:
-                break;
-
-            case TypeRadioElement.None:
+                radioelementTransform = defaultResist;
                 break;
         }
-        return resistTransform;
+        return radioelementTransform;
     }
     public void OccupiedSlot(bool isTrue)
     {
         isOccupied = isTrue;
+    }
+    public void RemoveRadioelementInSlot()
+    {
+        radioelementInSlot = null;
+    }
+
+    public Transform ReturnParenRadioelement()
+    {
+        return boardParent;
     }
 }

@@ -8,11 +8,14 @@ public class LegsSolderingProgress : MonoBehaviour
     [SerializeField] float currentProgress = 0;
     [SerializeField] Transform solderLegsScale;
     [SerializeField] bool progressDone;
+    [SerializeField] CheckSolderOnLegsElement checkSolderOnLegsElement;
+
     private float amountForBar;
 
     private void Awake()
     {
         solderLegsScale = transform.GetChild(0).transform;
+        checkSolderOnLegsElement = transform.parent.GetComponent<CheckSolderOnLegsElement>();
     }
     public void SetFinalProgress(float duration)
     {
@@ -28,8 +31,14 @@ public class LegsSolderingProgress : MonoBehaviour
         if(currentProgress>=finalProgress)
         {
             progressDone = true;
+            checkSolderOnLegsElement.CheckLegsSoldering();
             Debug.Log("Перегрев ножки элемента");
         }
         return amountForBar;
+    }
+
+    public bool GetStatusLegs()
+    {
+        return progressDone;
     }
 }

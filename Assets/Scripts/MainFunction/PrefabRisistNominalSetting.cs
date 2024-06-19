@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum TypeRadioElement
@@ -52,9 +53,13 @@ public class PrefabRisistNominalSetting : MonoBehaviour
 
     [SerializeField]private PrefabRisistNominalSetting prefabRisistNominal;
     private Quaternion startRotation;
-    
+
+    [Header("Tweezers and slot")]
+    [SerializeField] Tweezers tweezers;
+    [SerializeField] Transform slot;
 
     public double resistNominal { get; set; }
+    [SerializeField] bool isSolderOnSLot; 
 
     
 
@@ -290,5 +295,26 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     public void SetDefaultRotation()
     {
         transform.localRotation = startRotation;
+    }
+
+
+    public void SetTweezers(Transform tweezers)
+    {
+        this.tweezers = tweezers.GetComponent<Tweezers>();
+    }
+    public void ResetTweeezers()
+    {
+        tweezers = null;
+    }
+    public void SetSlot(Transform currentSlot)
+    {
+        slot = currentSlot;
+    }
+    public void FullSolderingElement(bool isSolder)
+    {
+        isSolderOnSLot = isSolder;
+        tweezers.ReleaseSolderedElement();
+        transform.parent = slot.GetComponent<SlotInfo>().ReturnParenRadioelement();
+        RigidbodyKinematic(isSolder);
     }
 }

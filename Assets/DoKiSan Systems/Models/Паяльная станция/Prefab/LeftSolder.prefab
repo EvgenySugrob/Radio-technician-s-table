@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4224384141430410138}
   - component: {fileID: 5886533742806421801}
   - component: {fileID: 7167107695770770525}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,9 +93,9 @@ GameObject:
   m_Component:
   - component: {fileID: 804589067805634633}
   - component: {fileID: 7317093486294853708}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: LeftSolder
-  m_TagString: Untagged
+  m_TagString: LegsSoldering
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

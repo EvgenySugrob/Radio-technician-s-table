@@ -16,6 +16,7 @@ public class Tweezers : MonoBehaviour
     [SerializeField] GameObject takeButton;
     [SerializeField] GameObject dropButton;
     [SerializeField] TakeDropRadioElement takeDropRadioElement;
+    [SerializeField] PopupMenuCustom popupMenuCustom;
 
     [Header("RotatePart")]
     [SerializeField] Transform firstPart;
@@ -35,6 +36,8 @@ public class Tweezers : MonoBehaviour
     [SerializeField] Transform raycastPoint;
     [SerializeField] LayerMask layerMask;
 
+    [SerializeField] private float offsetTweezerAfterRelease = 0.05f;
+
     private void Start()
     {
         firstPartStartRotation = firstPart.localRotation;
@@ -53,7 +56,12 @@ public class Tweezers : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-
+        if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers)
+        {
+            Debug.Log("TW+");
+            takeDropRadioElement.TakeDropButtonActivate(isTakeElement, isLittleTweezers);
+            radioElement = other.gameObject;
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -93,6 +101,7 @@ public class Tweezers : MonoBehaviour
         firstPart.localRotation = Quaternion.Euler(0,-prefabSetting.GetConectionAngle(),0);
         secondPart.localRotation = Quaternion.Euler(0, prefabSetting.GetConectionAngle(), 0);
         prefabSetting.RigidbodyKinematic(true);
+        prefabSetting.SetTweezers(transform);
         radioElement.transform.parent = transform;
         radioElement.transform.position = elementPoint.position;
         isTakeElement = true;
@@ -105,6 +114,7 @@ public class Tweezers : MonoBehaviour
         firstPart.localRotation = firstPartStartRotation;
         secondPart.localRotation = secondPartStartRotation;
         prefabSetting.RigidbodyKinematic(false);
+        prefabSetting.ResetTweeezers();
         radioElement.transform.parent = null;
         isTakeElement= false;
 
@@ -141,17 +151,37 @@ public class Tweezers : MonoBehaviour
 
         isSlotSet = true;
         takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
-
+        radioElement.GetComponent<PrefabRisistNominalSetting>().SetSlot(nearSlot);
         SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
         TypeRadioElement type = radioElement.GetComponent<PrefabRisistNominalSetting>().typeRadioElement;
 
-        transform.position = slot.GetRadioElementTypePosition(type).position;
-        //transform.parent = slot.GetRadioElementTypePosition(type); подумать??
+        transform.position = slot.GetRadioElementTypePosition(type,radioElement).position;
         slot.OccupiedSlot(true);
         dragAndDrop.ClearHand();
     }
     public void SlotRemove()
     {
 
+    }
+
+    public void ReleaseSolderedElement()
+    {
+        radioElement.TryGetComponent<PrefabRisistNominalSetting>(out var prefabSetting);
+        firstPart.localRotation = firstPartStartRotation;
+        secondPart.localRotation = secondPartStartRotation;
+
+        
+        radioElement.transform.parent = null;
+        isTakeElement = false;
+        isSlotSet = false;
+
+        transform.TryGetComponent<IDrag>(out var drag);
+        drag.onFreeze(false);
+        popupMenuCustom.ExtrimeFreezeObj(transform.gameObject);
+
+        transform.position = new Vector3(transform.position.x, transform.position.y + offsetTweezerAfterRelease,
+            transform.position.z);
+        prefabSetting.ResetTweeezers();
+        takeDropRadioElement.AllButtonDisable();
     }
 }
