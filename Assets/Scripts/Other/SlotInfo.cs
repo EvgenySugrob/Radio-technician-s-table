@@ -5,6 +5,7 @@ using UnityEngine;
 public class SlotInfo : MonoBehaviour
 {
     public bool isOccupied { set; get; }
+    [SerializeField] bool isFluxed;
 
     [SerializeField] GameObject radioelementInSlot;
     [SerializeField] Transform capasitorTransform;
@@ -61,4 +62,11 @@ public class SlotInfo : MonoBehaviour
     {
         return boardParent;
     }
+
+    public bool IsFluxed()
+    {
+        return isFluxed;
+    }
+
+ 
 }

@@ -15,6 +15,8 @@ TagManager:
   - Tweezers
   - Solder
   - LegsSoldering
+  - SwabGroup
+  - Flux
   layers:
   - Default
   - TransparentFX

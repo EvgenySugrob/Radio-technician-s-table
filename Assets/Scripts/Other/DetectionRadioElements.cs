@@ -22,6 +22,10 @@ public class DetectionRadioElements : MonoBehaviour
             Debug.Log(other.name + " Вход");
             other.GetComponent<SolderInteract>().ActiveOrtoBt(true);
         }
+        else if(other.GetComponent<CottonSwabControl>())
+        {
+            other.GetComponent<CottonSwabControl>().ActiveOrtoview(true);
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -38,6 +42,10 @@ public class DetectionRadioElements : MonoBehaviour
         else if (other.tag == "Solder")
         {
             other.GetComponent<SolderInteract>().ActiveOrtoBt(true);
+        }
+        else if (other.GetComponent<CottonSwabControl>())
+        {
+            other.GetComponent<CottonSwabControl>().ActiveOrtoview(true);
         }
     }
 
@@ -56,6 +64,10 @@ public class DetectionRadioElements : MonoBehaviour
         {
             Debug.Log(other.name + " Выход");
             other.GetComponent<SolderInteract>().ActiveOrtoBt(false);
+        }
+        else if (other.GetComponent<CottonSwabControl>())
+        {
+            other.GetComponent<CottonSwabControl>().ActiveOrtoview(false);
         }
     }
 }

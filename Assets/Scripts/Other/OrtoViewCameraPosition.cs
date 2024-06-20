@@ -11,8 +11,8 @@ public class OrtoViewCameraPosition : MonoBehaviour
     [SerializeField] CinemachineVirtualCamera virtualCamera;
     [SerializeField] DragAndDrop dragAndDrop;
     [SerializeField] float speed = 3f;
-    Vector3 startPosition;
-    Quaternion startRotation;
+    [SerializeField]Vector3 startPosition;
+    [SerializeField]Quaternion startRotation;
 
     [Header("BoardPoint")]
     [SerializeField] Transform boardOrtoViewPosition;
@@ -23,10 +23,6 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] GameObject buttonBack;
-
-    private bool isMove;
-    private bool isOrto;
-    float minDistationBetweenTwoPoints = 0.02f;
 
     public void StartOrtoView()
     {
@@ -39,6 +35,10 @@ public class OrtoViewCameraPosition : MonoBehaviour
         {
             SolderInHand();
         }
+        if(objectInHandNow.GetComponent<CottonSwabControl>())
+        {
+            SwabInHand();
+        }
         triggerZonePopupBt.enabled = false;
         foreach (GameObject slotsGroup in boardSlots) 
         {
@@ -50,7 +50,16 @@ public class OrtoViewCameraPosition : MonoBehaviour
         startPosition = player.position;
         startRotation = playerCamera.rotation;
 
-        isMove = true;
+        player.GetComponent<PlayerController>().ActiveOrtoView(true);
+        playerCamera.GetComponent<Camera>().orthographic = true;
+        dragAndDrop.OrtoViewParam();
+
+        player.position = boardOrtoViewPosition.position;
+        playerCamera.rotation = boardOrtoViewPosition.rotation;
+
+        buttonBack.SetActive(true);
+
+        //isMove = true;
     }
     private void SolderInHand()
     {
@@ -62,74 +71,47 @@ public class OrtoViewCameraPosition : MonoBehaviour
         tweezers = dragAndDrop.GetDraggedObject().GetComponent<Tweezers>();
         tweezers.ActiveOrtoViewBt(false);
     }
+    private void SwabInHand()
+    {
+        objectInHandNow.GetComponent<CottonSwabControl>().ActiveOrtoview(false);
+        objectInHandNow.GetComponent<CottonSwabControl>().RaycastPointActive(true);
+    }
+    private void DisableSwabInHand()
+    {
+        objectInHandNow.GetComponent<CottonSwabControl>().RaycastPointActive(false);
+    }
     private void DisableSolderDetection()
     {
         objectInHandNow.GetComponent<SolderInteract>().StartSolderingDetectionSlot(false);
     }
+
+
     public void ReturnToMainView()
     {
-        if(objectInHandNow.GetComponent<SolderInteract>())
+        player.GetComponent<PlayerController>().enabled =false;
+        if (objectInHandNow.GetComponent<SolderInteract>())
         {
             DisableSolderDetection();
         }
+        else if(objectInHandNow.GetComponent<CottonSwabControl>())
+        {
+            DisableSwabInHand();
+        }
         playerCamera.GetComponent<Camera>().orthographic = false;
         buttonBack.SetActive(false);
-        isMove = true;
-    }
 
-    private void Update()
-    {
-        if(isOrto && isMove)
+        player.GetComponent<PlayerController>().ActiveOrtoView(false);
+        foreach (GameObject slotsGroup in boardSlots)
         {
-            MoveFromPoint();
+            slotsGroup.SetActive(false);
         }
-        else if(isOrto == false && isMove)
-        {
-            MoveToPoint();
-        }
-    }
+        triggerZonePopupBt.enabled = true;
+        virtualCamera.enabled = true;
+        tweezers = null;
+        objectInHandNow = null;
 
-    private void MoveToPoint()
-    {
-        if(Vector3.Distance(player.position,boardOrtoViewPosition.position)>minDistationBetweenTwoPoints)
-        {
-            playerCamera.rotation = Quaternion.Lerp(playerCamera.rotation,boardOrtoViewPosition.rotation, speed);
-            player.position = Vector3.Lerp(player.position, boardOrtoViewPosition.position, speed);
-        }
-        else
-        {
-            isMove = false;
-            isOrto = true;
-
-            player.GetComponent<PlayerController>().ActiveOrtoView(true);
-            playerCamera.GetComponent<Camera>().orthographic = true;
-            dragAndDrop.OrtoViewParam();
-
-            buttonBack.SetActive(true);
-        }
-    }
-
-    private void MoveFromPoint()
-    {
-        if (Vector3.Distance(player.position, startPosition) > minDistationBetweenTwoPoints)
-        {
-            playerCamera.rotation = Quaternion.Lerp(playerCamera.rotation, startRotation, speed);
-            player.position = Vector3.Lerp(player.position, startPosition, speed);
-        }
-        else
-        {
-            isMove = false;
-            isOrto = false;
-
-            player.GetComponent<PlayerController>().ActiveOrtoView(false);
-            foreach (GameObject slotsGroup in boardSlots)
-            {
-                slotsGroup.SetActive(false);
-            }
-            triggerZonePopupBt.enabled = true;
-            virtualCamera.enabled = true;
-            tweezers = null;
-            objectInHandNow = null;
-        }
+        player.position = startPosition;
+        playerCamera.rotation = startRotation;
+        player.GetComponent<PlayerController>().enabled = true;
     }
 }

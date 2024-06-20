@@ -80,7 +80,7 @@ public class DragAndDrop : MonoBehaviour
 
     private void MouseRightInput(InputAction.CallbackContext obj)
     {
-        if (draggedObject != null && checkOpenUIComponent.NonActiveUIComponent())
+        if (draggedObject != null && checkOpenUIComponent.NonActiveUIComponent() && draggedObject.GetComponent<NoPopupMenu>() == null)
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
@@ -161,7 +161,10 @@ public class DragAndDrop : MonoBehaviour
                     regulatorCheck = true;
                 }
 
-                
+                if(hit.collider.GetComponent<CottonSwabSpawn>()!=null && draggedObject == null)
+                {
+                    hit.collider.GetComponent<CottonSwabSpawn>().SpawnCottonSwab();
+                }
             }
         }
     }
@@ -346,10 +349,18 @@ public class DragAndDrop : MonoBehaviour
         {
             currentDistanceToObject = ortoViewDistance;
         }
+        else if(draggedObject.GetComponent<CottonSwabControl>())
+        {
+            currentDistanceToObject = 0.19f;
+        }
     }
 
     public void TweezersSlotSet()
     {
 
+    }
+    public void SetCustomCurrentDistanceToObject(float distance)
+    {
+        currentDistanceToObject = distance;
     }
 }
