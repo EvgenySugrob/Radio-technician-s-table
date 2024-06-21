@@ -26,7 +26,9 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
     public void StartOrtoView()
     {
+        player.GetComponent<PlayerController>().enabled =false;
         objectInHandNow = dragAndDrop.GetDraggedObject();
+
         if(objectInHandNow.GetComponent<Tweezers>())
         {
             TweezersInHand();
@@ -39,6 +41,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
         {
             SwabInHand();
         }
+
         triggerZonePopupBt.enabled = false;
         foreach (GameObject slotsGroup in boardSlots) 
         {
@@ -59,6 +62,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
         buttonBack.SetActive(true);
 
+        player.GetComponent<PlayerController>().enabled = true;
         //isMove = true;
     }
     private void SolderInHand()

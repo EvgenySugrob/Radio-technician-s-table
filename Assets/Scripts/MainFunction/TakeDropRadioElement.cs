@@ -53,6 +53,17 @@ public class TakeDropRadioElement : MonoBehaviour
             SlotSetBt(isActive);
         }
     }
+    public void EnableButtonSlotRemove(bool isActive, bool isLittleTweezers)
+    {
+        if (isLittleTweezers)
+        {
+            LittleSlotRemoveBt(isActive);
+        }
+        else
+        {
+            SlotRemoveBt(isActive);
+        }
+    }
 
     public void AllButtonDisable()
     {
@@ -120,6 +131,14 @@ public class TakeDropRadioElement : MonoBehaviour
     private void LittleSlotSetBt(bool isActive)
     {
         littleBoardSlotSet.SetActive(isActive);
+    }
+    private void SlotRemoveBt(bool isActive)
+    {
+        boardSlotRemove.SetActive(isActive);
+    }
+    private void LittleSlotRemoveBt(bool isActive)
+    {
+        littleBoardSlotRemove.SetActive(isActive);
     }
 
     public void DisableAllOrtoViewBt()

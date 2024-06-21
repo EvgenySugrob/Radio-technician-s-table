@@ -5,6 +5,7 @@ using UnityEngine;
 public class SlotInfo : MonoBehaviour
 {
     public bool isOccupied { set; get; }
+    public bool isRedyToRemove { get; set; } //убирать после распайки
     [SerializeField] bool isFluxed;
 
     [SerializeField] GameObject radioelementInSlot;
@@ -15,6 +16,10 @@ public class SlotInfo : MonoBehaviour
 
     [SerializeField] Transform boardParent;
     private BoxCollider boxCollider;
+
+    [SerializeField] float fluxindDuration = 1.5f;
+    [SerializeField] float fluxingTimer;
+    private float amountBarProgress;
 
 
     private void Awake()
@@ -57,6 +62,11 @@ public class SlotInfo : MonoBehaviour
     {
         radioelementInSlot = null;
     }
+    public GameObject ReturnRadioelementInSlot()
+    {
+        return radioelementInSlot;
+    }
+
 
     public Transform ReturnParenRadioelement()
     {
@@ -68,5 +78,19 @@ public class SlotInfo : MonoBehaviour
         return isFluxed;
     }
 
+    public float FluxingProcess()
+    {
+        if(isFluxed==false)
+        {
+            fluxingTimer += Time.deltaTime;
+            amountBarProgress = fluxingTimer / fluxindDuration;
+            if (fluxingTimer>=fluxindDuration)
+            {
+                isFluxed = true;
+            }
+        }
+
+        return amountBarProgress;
+    }
  
 }

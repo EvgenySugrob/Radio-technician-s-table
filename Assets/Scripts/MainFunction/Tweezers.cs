@@ -83,13 +83,21 @@ public class Tweezers : MonoBehaviour
                 if (hit.collider.GetComponent<SlotInfo>())
                 {
                     nearSlot = hit.collider.transform;
-                    takeDropRadioElement.EnableButtonSlotsInfo(true, isLittleTweezers);
-
+                    if(radioElement!=null && isTakeElement)
+                    {
+                        takeDropRadioElement.EnableButtonSlotsInfo(true, isLittleTweezers);
+                    }
+                    else if(isTakeElement ==false && nearSlot.GetComponent<SlotInfo>().isOccupied)
+                    {
+                        takeDropRadioElement.EnableButtonSlotRemove(true, isLittleTweezers);
+                    }
                 }
             }
             else
             {
                 takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
+                takeDropRadioElement.EnableButtonSlotRemove(false, isLittleTweezers);
+                
                 nearSlot = null;
             }
         }
@@ -146,22 +154,44 @@ public class Tweezers : MonoBehaviour
 
     public void SlotSet()
     {
-        transform.TryGetComponent<IDrag>(out var drag);
-        drag.onFreeze(true);
+        if(nearSlot.GetComponent<SlotInfo>().IsFluxed())
+        {
+            transform.TryGetComponent<IDrag>(out var drag);
+            drag.onFreeze(true);
 
-        isSlotSet = true;
-        takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
-        radioElement.GetComponent<PrefabRisistNominalSetting>().SetSlot(nearSlot);
-        SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
-        TypeRadioElement type = radioElement.GetComponent<PrefabRisistNominalSetting>().typeRadioElement;
+            isSlotSet = true;
+            takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
+            radioElement.GetComponent<PrefabRisistNominalSetting>().SetSlot(nearSlot);
+            SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
+            TypeRadioElement type = radioElement.GetComponent<PrefabRisistNominalSetting>().typeRadioElement;
 
-        transform.position = slot.GetRadioElementTypePosition(type,radioElement).position;
-        slot.OccupiedSlot(true);
-        dragAndDrop.ClearHand();
+            transform.position = slot.GetRadioElementTypePosition(type, radioElement).position;
+            slot.OccupiedSlot(true);
+            dragAndDrop.ClearHand();
+        }
+        else
+        {
+            Debug.Log("Необходимо нанести флюс");
+        }
     }
     public void SlotRemove()
     {
+        SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
 
+        GameObject radioElementInSlot = slot.ReturnRadioelementInSlot();
+        PrefabRisistNominalSetting nominalSetting = radioElementInSlot.GetComponent<PrefabRisistNominalSetting>();
+        TypeRadioElement type = nominalSetting.typeRadioElement;
+        Transform connectPosition = slot.GetRadioElementTypePosition(type, radioElementInSlot);
+        transform.position = connectPosition.position;
+        slot.isRedyToRemove= true;
+
+        firstPart.localRotation = Quaternion.Euler(0, -nominalSetting.GetConectionAngle(), 0);
+        secondPart.localRotation = Quaternion.Euler(0, nominalSetting.GetConectionAngle(), 0);
+
+        popupMenuCustom.ExtrimeFreezeObj(transform.gameObject);
+        dragAndDrop.ClearHand();
+
+        takeDropRadioElement.AllButtonDisable();
     }
 
     public void ReleaseSolderedElement()

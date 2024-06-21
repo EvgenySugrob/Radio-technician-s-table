@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CottonSwabControl : MonoBehaviour
 {
@@ -11,10 +12,19 @@ public class CottonSwabControl : MonoBehaviour
     [SerializeField] PopupMenuCustom popupMenuCustom;
     [SerializeField] Fluxing flux;
     [SerializeField] List<GameObject> triggerZoneList;
-    [SerializeField] List<GameObject> raycastPointList;
-    [SerializeField] GameObject ortoViewBt; 
-
+    [SerializeField] Transform raycastPoint0;
+    [SerializeField] Transform raycastPoint1;   
+    [SerializeField] GameObject ortoViewBt;
+    [SerializeField] Transform target;
     private bool raycastRotationTotarget;
+
+    [Header("raycastSetting")]
+    [SerializeField] LayerMask layerMask;
+    [SerializeField] float distance = 3;
+    [SerializeField] Transform nearSlot;
+    [SerializeField] GameObject statusFluxSlot;
+    [SerializeField] Image fluxBar;
+    
 
     public void DeleteSwap()
     {
@@ -61,5 +71,67 @@ public class CottonSwabControl : MonoBehaviour
     public void RaycastPointActive(bool isActive)
     {
         raycastRotationTotarget = isActive;
+    }
+    private void Update()
+    {
+       if(raycastRotationTotarget)
+       {
+            CheckDistanceFromRaycastPoint();
+
+       }
+        
+    }
+    private void CheckDistanceFromRaycastPoint()
+    {
+        Vector3 pointFloor = new Vector3(transform.position.x, target.position.y, transform.position.z);
+        float distanceFromFirstPoint = Vector3.Distance(raycastPoint0.position, pointFloor);
+        float distanceFromSecondPoint = Vector3.Distance(raycastPoint1.position, pointFloor);
+        if (distanceFromFirstPoint < distanceFromSecondPoint)
+        {
+            RaycastCheck(raycastPoint0);
+        }
+        else if (distanceFromSecondPoint < distanceFromFirstPoint)
+        {
+            RaycastCheck(raycastPoint1);
+        }
+    }
+    private void RaycastCheck(Transform pointRaycast)
+    {
+        if(isFluxed)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(pointRaycast.position, pointRaycast.TransformDirection(Vector3.forward), out hit, distance, layerMask))
+            {
+                Debug.DrawRay(transform.position, transform.forward, Color.green, distance, true);
+                if (hit.collider.GetComponent<SlotInfo>())
+                {
+                    nearSlot = hit.collider.transform;
+                    if (nearSlot.GetComponent<SlotInfo>().IsFluxed() == false)
+                    {
+                        statusFluxSlot.SetActive(true);
+                        fluxBar.fillAmount = nearSlot.GetComponent<SlotInfo>().FluxingProcess();
+                    }
+                    else
+                    {
+                        statusFluxSlot.SetActive(false);
+                    }
+                    
+                }
+                else
+                {
+                    statusFluxSlot.SetActive(false);
+                    Debug.Log("Не слот");
+                }
+            }
+            else
+            {
+                statusFluxSlot.SetActive(false);
+            }
+        }
+        else
+        {
+            Debug.Log("Необходимо взять флюс");
+        }
+        
     }
 }
