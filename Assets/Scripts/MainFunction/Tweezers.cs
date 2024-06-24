@@ -35,8 +35,14 @@ public class Tweezers : MonoBehaviour
     [SerializeField] Transform nearSlot;
     [SerializeField] Transform raycastPoint;
     [SerializeField] LayerMask layerMask;
+    [SerializeField] List<GameObject> slotsGroup;
 
     [SerializeField] private float offsetTweezerAfterRelease = 0.05f;
+
+    [Header("CottonSwab")]
+    [SerializeField] CottonSwabSpawn cottonSwabSpawn;
+    [SerializeField] CottonSwabControl cottonSwabControl;
+    private Transform hideSlot;
 
     private void Start()
     {
@@ -58,7 +64,6 @@ public class Tweezers : MonoBehaviour
     {
         if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers)
         {
-            Debug.Log("TW+");
             takeDropRadioElement.TakeDropButtonActivate(isTakeElement, isLittleTweezers);
             radioElement = other.gameObject;
         }
@@ -103,6 +108,16 @@ public class Tweezers : MonoBehaviour
         }
     }
 
+    public void TakeElementRemove()
+    {
+        radioElement.transform.parent = transform;
+        radioElement.transform.position = elementPoint.position;
+        radioElement.TryGetComponent<PrefabRisistNominalSetting>(out var prefabNominal);
+        prefabNominal.RigidbodyKinematic(true);
+        prefabNominal.SetTweezers(transform);
+        isTakeElement = true;
+        takeDropRadioElement.AllButtonDisable();
+    }
     public void TakeElement()
     {
         radioElement.TryGetComponent<PrefabRisistNominalSetting>(out var prefabSetting);
@@ -177,6 +192,7 @@ public class Tweezers : MonoBehaviour
     public void SlotRemove()
     {
         SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
+        hideSlot = nearSlot;
 
         GameObject radioElementInSlot = slot.ReturnRadioelementInSlot();
         PrefabRisistNominalSetting nominalSetting = radioElementInSlot.GetComponent<PrefabRisistNominalSetting>();
@@ -184,6 +200,7 @@ public class Tweezers : MonoBehaviour
         Transform connectPosition = slot.GetRadioElementTypePosition(type, radioElementInSlot);
         transform.position = connectPosition.position;
         slot.isRedyToRemove= true;
+        nominalSetting.SetTweezers(transform);
 
         firstPart.localRotation = Quaternion.Euler(0, -nominalSetting.GetConectionAngle(), 0);
         secondPart.localRotation = Quaternion.Euler(0, nominalSetting.GetConectionAngle(), 0);
@@ -207,11 +224,32 @@ public class Tweezers : MonoBehaviour
 
         transform.TryGetComponent<IDrag>(out var drag);
         drag.onFreeze(false);
-        popupMenuCustom.ExtrimeFreezeObj(transform.gameObject);
+        TweezersFreezeWithoutPopupMenu();
 
-        transform.position = new Vector3(transform.position.x, transform.position.y + offsetTweezerAfterRelease,
-            transform.position.z);
+        TweezersSetOffsetFreeze();
         prefabSetting.ResetTweeezers();
         takeDropRadioElement.AllButtonDisable();
+    }
+
+    public void TweezersReadyRemoveElement()
+    {
+        if(hideSlot != null && hideSlot.GetComponent<SlotInfo>().isRedyToRemove)
+        {
+            Debug.Log("TweezersReadyRemoveElement()");
+            foreach (GameObject item in slotsGroup)
+            {
+                item.SetActive(false);
+            }
+        }
+    }
+
+    public void TweezersFreezeWithoutPopupMenu()
+    {
+        popupMenuCustom.ExtrimeFreezeObj(transform.gameObject);
+    }
+    public void TweezersSetOffsetFreeze()
+    {
+        transform.position = new Vector3(transform.position.x, transform.position.y + offsetTweezerAfterRelease,
+            transform.position.z);
     }
 }

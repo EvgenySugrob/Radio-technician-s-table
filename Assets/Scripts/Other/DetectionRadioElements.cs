@@ -6,7 +6,6 @@ public class DetectionRadioElements : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name + " Без условий");
         if (other.tag == "Tweezers")
         {
             Tweezers tweezers = other.GetComponent<Tweezers>();

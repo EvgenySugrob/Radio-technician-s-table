@@ -317,4 +317,12 @@ public class PrefabRisistNominalSetting : MonoBehaviour
         transform.parent = slot.GetComponent<SlotInfo>().ReturnParenRadioelement();
         RigidbodyKinematic(isSolder);
     }
+
+    public void FullUnsolderingElement()
+    {
+        isSolderOnSLot = false;
+        tweezers.TakeElementRemove();
+        //tweezers.TweezersFreezeWithoutPopupMenu();
+        tweezers.TweezersSetOffsetFreeze();
+    }
 }

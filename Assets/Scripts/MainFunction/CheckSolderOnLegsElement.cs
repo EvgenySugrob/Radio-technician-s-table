@@ -9,15 +9,16 @@ public class CheckSolderOnLegsElement : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log(transform.childCount);
         prefabRisistNominalSetting = transform.parent.GetComponent<PrefabRisistNominalSetting>();
 
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if(transform.GetChild(i).GetComponent<LegsSolderingProgress>())
-            {
-                legsSolderingProgressesList.Add(transform.GetChild(i).GetComponent<LegsSolderingProgress>());
-            }
-        }
+        //for (int i = 0; i < transform.childCount; i++)
+        //{
+        //    if(transform.GetChild(i).GetComponent<LegsSolderingProgress>())
+        //    {
+        //        legsSolderingProgressesList.Add(transform.GetChild(i).GetComponent<LegsSolderingProgress>());
+        //    }
+        //}
     }
 
     public void CheckLegsSoldering()
@@ -33,6 +34,26 @@ public class CheckSolderOnLegsElement : MonoBehaviour
         if(countSolderingLegs == legsSolderingProgressesList.Count)
         {
             prefabRisistNominalSetting.FullSolderingElement(true);
+        }
+    }
+
+    public void CheckLegsUnsoldering()
+    {
+        int countUnsolderinglegs = 0;
+        foreach(LegsSolderingProgress legs in legsSolderingProgressesList)
+        {
+            if(legs.GetStatusLegs() == false)
+            {
+                countUnsolderinglegs++;
+            }
+        }
+        if(countUnsolderinglegs == legsSolderingProgressesList.Count)
+        {
+            prefabRisistNominalSetting.FullUnsolderingElement();
+            foreach(LegsSolderingProgress legs in legsSolderingProgressesList)
+            {
+                legs.SetFluxing(false);
+            }
         }
     }
 }

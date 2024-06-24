@@ -24,6 +24,9 @@ public class CottonSwabControl : MonoBehaviour
     [SerializeField] Transform nearSlot;
     [SerializeField] GameObject statusFluxSlot;
     [SerializeField] Image fluxBar;
+
+    [Header("TweezersChekRemove")]
+    [SerializeField] List<Tweezers> tweezers;
     
 
     public void DeleteSwap()
@@ -77,7 +80,6 @@ public class CottonSwabControl : MonoBehaviour
        if(raycastRotationTotarget)
        {
             CheckDistanceFromRaycastPoint();
-
        }
         
     }
@@ -102,7 +104,7 @@ public class CottonSwabControl : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(pointRaycast.position, pointRaycast.TransformDirection(Vector3.forward), out hit, distance, layerMask))
             {
-                Debug.DrawRay(transform.position, transform.forward, Color.green, distance, true);
+                Debug.DrawRay(pointRaycast.position, pointRaycast.forward, Color.green, distance, true);
                 if (hit.collider.GetComponent<SlotInfo>())
                 {
                     nearSlot = hit.collider.transform;
@@ -116,6 +118,20 @@ public class CottonSwabControl : MonoBehaviour
                         statusFluxSlot.SetActive(false);
                     }
                     
+                }
+                else if(hit.collider.GetComponent<LegsSolderingProgress>())
+                {
+                    LegsSolderingProgress elementLeg = hit.collider.GetComponent<LegsSolderingProgress>();
+
+                    if(elementLeg.GetFluxingLeg() == false && elementLeg.GetStatusLegs() == true)
+                    {
+                        statusFluxSlot.SetActive(true);
+                        fluxBar.fillAmount = elementLeg.GetComponent<LegsSolderingProgress>().FluxinglegsElement();
+                    }
+                    else
+                    {
+                        statusFluxSlot.SetActive(false);
+                    }
                 }
                 else
                 {
@@ -133,5 +149,13 @@ public class CottonSwabControl : MonoBehaviour
             Debug.Log("Необходимо взять флюс");
         }
         
+    }
+
+    public void CheckTweezersReadyToRemoveElement()
+    {
+        foreach(Tweezers tweezer in tweezers)
+        {
+            tweezer.TweezersReadyRemoveElement();
+        }
     }
 }

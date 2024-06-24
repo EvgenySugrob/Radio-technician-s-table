@@ -31,20 +31,17 @@ public class SolderSlotsDetect : MonoBehaviour
             {
                 if(hit.collider.tag == "LegsSoldering" )
                 {
-                    Debug.Log("Нашел НОГУ");
                     solderInteract.SetRadioelement(hit.collider.transform);
                     solderInteract.IsSolderingPointEnable(true);
                 }
                 else
                 {
-                    Debug.Log("Потерял НОГУ");
                     solderInteract.IsSolderingPointEnable(false);
                     solderInteract.SetRadioelement(null);
                 }
             }
             else
             {
-                Debug.Log("Потерял НОГУ");
                 solderInteract.IsSolderingPointEnable(false);
             }
         }

@@ -37,17 +37,16 @@ public class OrtoViewCameraPosition : MonoBehaviour
         {
             SolderInHand();
         }
-        if(objectInHandNow.GetComponent<CottonSwabControl>())
-        {
-            SwabInHand();
-        }
 
         triggerZonePopupBt.enabled = false;
-        foreach (GameObject slotsGroup in boardSlots) 
+        foreach (GameObject slotsGroup in boardSlots)
         {
             slotsGroup.SetActive(true);
         }
-       
+        if (objectInHandNow.GetComponent<CottonSwabControl>())
+        {
+            SwabInHand();
+        }
 
         virtualCamera.enabled = false;
         startPosition = player.position;
@@ -77,8 +76,10 @@ public class OrtoViewCameraPosition : MonoBehaviour
     }
     private void SwabInHand()
     {
-        objectInHandNow.GetComponent<CottonSwabControl>().ActiveOrtoview(false);
-        objectInHandNow.GetComponent<CottonSwabControl>().RaycastPointActive(true);
+        CottonSwabControl cottonSwab = objectInHandNow.GetComponent<CottonSwabControl>();
+        cottonSwab.ActiveOrtoview(false);
+        cottonSwab.RaycastPointActive(true);
+        cottonSwab.CheckTweezersReadyToRemoveElement();
     }
     private void DisableSwabInHand()
     {
@@ -92,16 +93,20 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
     public void ReturnToMainView()
     {
-        player.GetComponent<PlayerController>().enabled =false;
-        if (objectInHandNow.GetComponent<SolderInteract>())
+        player.GetComponent<PlayerController>().enabled = false;
+
+        if (objectInHandNow != null)
         {
-            DisableSolderDetection();
+            if (objectInHandNow.GetComponent<SolderInteract>())
+            {
+                DisableSolderDetection();
+            }
+            else if (objectInHandNow.GetComponent<CottonSwabControl>())
+            {
+                DisableSwabInHand();
+            }
+            playerCamera.GetComponent<Camera>().orthographic = false;
         }
-        else if(objectInHandNow.GetComponent<CottonSwabControl>())
-        {
-            DisableSwabInHand();
-        }
-        playerCamera.GetComponent<Camera>().orthographic = false;
         buttonBack.SetActive(false);
 
         player.GetComponent<PlayerController>().ActiveOrtoView(false);

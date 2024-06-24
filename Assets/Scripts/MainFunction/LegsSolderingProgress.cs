@@ -8,7 +8,19 @@ public class LegsSolderingProgress : MonoBehaviour
     [SerializeField] float currentProgress = 0;
     [SerializeField] Transform solderLegsScale;
     [SerializeField] bool progressDone;
+    [SerializeField] bool isFluxiLegs;
     [SerializeField] CheckSolderOnLegsElement checkSolderOnLegsElement;
+    [SerializeField] LegsSolderingProgress neighboringLeg;
+
+    [Header("Fluxing legs for remove")]
+    [SerializeField] float fluxingDuration = 1.5f;
+    [SerializeField] float fluxingTimer = 0f;
+    [SerializeField] float amountBarProgressFlux = 0f;
+
+    [Header("Unsoldering")]
+    [SerializeField] float unsolderingDuration;
+    [SerializeField] float currentUnsolderingProgress;
+    private float amountUnsolderingBar;
 
     private float amountForBar;
 
@@ -20,6 +32,7 @@ public class LegsSolderingProgress : MonoBehaviour
     public void SetFinalProgress(float duration)
     {
         finalProgress= duration;
+        unsolderingDuration = finalProgress;
     }
 
     public float SolderingLegsElement()
@@ -37,8 +50,41 @@ public class LegsSolderingProgress : MonoBehaviour
         return amountForBar;
     }
 
+    public float UnsolderingLegs()
+    {
+        currentUnsolderingProgress += Time.deltaTime;
+        amountUnsolderingBar = currentUnsolderingProgress / unsolderingDuration;
+        if(currentUnsolderingProgress>=unsolderingDuration)
+        {
+            progressDone = false;
+            checkSolderOnLegsElement.CheckLegsUnsoldering();
+        }
+
+        return amountUnsolderingBar;
+    }
+
     public bool GetStatusLegs()
     {
         return progressDone;
+    }
+    
+    public bool GetFluxingLeg() 
+    {
+        return isFluxiLegs;
+    }
+    public float FluxinglegsElement()
+    {
+        fluxingTimer += Time.deltaTime;
+        amountBarProgressFlux = fluxingTimer / fluxingDuration;
+        if(fluxingTimer>=fluxingDuration)
+        {
+            SetFluxing(true);
+        }
+        return amountBarProgressFlux;
+    }
+
+    public void SetFluxing(bool isFlux)
+    {
+        isFluxiLegs = isFlux;
     }
 }

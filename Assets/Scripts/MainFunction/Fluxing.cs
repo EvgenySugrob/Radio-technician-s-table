@@ -14,6 +14,7 @@ public class Fluxing : MonoBehaviour
     [SerializeField] DragAndDrop dragAndDrop;
     [SerializeField] DragAndRotation dragAndRotation;
     [SerializeField] PlayerController playerController;
+    [SerializeField] float waitTime = 4.5f;
 
     private bool isDragActive;
     public void StartFlux(CottonSwabControl swab)
@@ -59,7 +60,7 @@ public class Fluxing : MonoBehaviour
 
     IEnumerator WaitStopAnimation()
     {
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(waitTime);
         animator.SetBool("isPlayAnimation", false);
 
         fakeSwab.SetActive(false);
