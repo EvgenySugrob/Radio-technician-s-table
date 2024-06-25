@@ -117,6 +117,9 @@ public class Tweezers : MonoBehaviour
         prefabNominal.SetTweezers(transform);
         isTakeElement = true;
         takeDropRadioElement.AllButtonDisable();
+        hideSlot.GetComponent<SlotInfo>().isOccupied= false;
+        hideSlot.GetComponent<SlotInfo>().isRedyToRemove= false;
+        hideSlot.GetComponent<SlotInfo>().SetIsFluxed(false);
     }
     public void TakeElement()
     {

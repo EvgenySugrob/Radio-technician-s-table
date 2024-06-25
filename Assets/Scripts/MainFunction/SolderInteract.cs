@@ -27,6 +27,7 @@ public class SolderInteract : MonoBehaviour
     [SerializeField] Transform startStandPosition;
     [SerializeField] float badHoldDuration = 0f;
     private RectTransform progressBarRect;
+    private float badTimer = 0;
 
     [Header("RosinTimeParam")]
     [SerializeField] float rosinHoldDuration = 1f;
@@ -46,8 +47,6 @@ public class SolderInteract : MonoBehaviour
     [Header("SolderOnIronTip")]
     [SerializeField] float duration = 1f;
     [SerializeField] Transform solderOnIronTip;
-    //private float maxSizeSolderOnTip = 1f;
-    //private float minSizeSolderOnTip = 0f;
     private float timer = 0;
 
     [Header("MainSolder Settings")]
@@ -102,6 +101,7 @@ public class SolderInteract : MonoBehaviour
             IronTinning();
             TakingSolder();
             HoldSolder();
+            BadHoldSolder();
             UnsolderingProgress();
         }
         else
@@ -179,19 +179,15 @@ public class SolderInteract : MonoBehaviour
     }
     private void HoldSolder()
     {
-        if(thereIsSolder && isSolderingPoint) //Выполняется только при пайке для распайки другое условие
+        if(thereIsSolder && isSolderingPoint) 
         {
             Debug.Log("Пайка");
             float currentProgress = radioelementSlot.GetComponent<LegsSolderingProgress>().SolderingLegsElement();
             holdTimer += Time.deltaTime;
-            //holdTimer = currentProgress;
-            Vector3 currentScaleSolderOnIronTip = solderOnIronTip.localScale;
 
-            Vector3 desiredPosition = solderOnIronTip.position;
-            Vector3 screenPosition = Camera.main.WorldToScreenPoint(desiredPosition);
-            screenPosition.x = Mathf.Clamp(screenPosition.x, 0, Screen.width);
-            screenPosition.y = Mathf.Clamp(screenPosition.y, 0, Screen.height);
-            progressBarRect.position = screenPosition;
+            ProgressBarCorrectUIPosition();
+            Vector3 currentScaleSolderOnIronTip = solderOnIronTip.localScale;
+           
             progressBarSolder.SetActive(true);
 
             Vector3 newScale = Vector3.Lerp(currentScaleSolderOnIronTip, Vector3.zero, currentProgress);
@@ -203,12 +199,26 @@ public class SolderInteract : MonoBehaviour
                 thereIsSolder = false;
                 isIronTin= false;
                 timer = 0;
-                
-                Debug.Log("Cool");//StartBad progress
             }
 
         }
        
+    }
+    private void BadHoldSolder()
+    {
+        if(isReady && isSolderingPoint)
+        {
+            if(holdTimer>=holdDuration)
+            {
+                badTimer += Time.deltaTime;
+                badProgress.fillAmount = badTimer / badHoldDuration;
+
+                if (badTimer >= badHoldDuration)
+                {
+                    Debug.Log("Перегрел");
+                }
+            }
+        }
     }
     private void TakingSolder()
     {
@@ -222,18 +232,14 @@ public class SolderInteract : MonoBehaviour
             if(timer>=duration)
             {
                 Debug.Log("Припой на паяльнике");
+                
                 thereIsSolder = true;
                 holdTimer = 0;
+                badTimer = 0;
+                badProgress.fillAmount = 0;
             }
         }
     }
-    private void ResetHold() //Сброс режима пайки, путем заморозки объекта или возвращение его на место
-    {
-        holdTimer = 0;                          //заменить на продолжение пайки
-        goodProgress.fillAmount = 0;            //так же
-    }
-
-
     public void StartSolderingDetectionSlot(bool isActive)
     {
         solderSlotsDetect.DetecActive(isActive);
@@ -253,11 +259,7 @@ public class SolderInteract : MonoBehaviour
                 LegsSolderingProgress legs = radioelementSlot.GetComponent<LegsSolderingProgress>();
                 if (legs.GetStatusLegs() && legs.GetFluxingLeg())
                 {
-                    Vector3 desiredPosition = solderOnIronTip.position;
-                    Vector3 screenPosition = Camera.main.WorldToScreenPoint(desiredPosition);
-                    screenPosition.x = Mathf.Clamp(screenPosition.x, 0, Screen.width);
-                    screenPosition.y = Mathf.Clamp(screenPosition.y, 0, Screen.height);
-                    progressBarRect.position = screenPosition;
+                    ProgressBarCorrectUIPosition();
                     progressBarSolder.SetActive(true);
 
                     goodProgress.fillAmount = legs.UnsolderingLegs();
@@ -267,8 +269,12 @@ public class SolderInteract : MonoBehaviour
         }
     }
 
-    public void SetHoldTimer()
+    private void ProgressBarCorrectUIPosition()
     {
-
+        Vector3 desiredPosition = solderOnIronTip.position;
+        Vector3 screenPosition = Camera.main.WorldToScreenPoint(desiredPosition);
+        screenPosition.x = Mathf.Clamp(screenPosition.x, 0, Screen.width);
+        screenPosition.y = Mathf.Clamp(screenPosition.y, 0, Screen.height);
+        progressBarRect.position = screenPosition;
     }
 }

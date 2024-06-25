@@ -21,6 +21,11 @@ public class SlotInfo : MonoBehaviour
     [SerializeField] float fluxingTimer;
     private float amountBarProgress;
 
+    [Header("Adjacent slots")]
+    [SerializeField] bool isComponentWithLegs;
+    [SerializeField] List<SlotInfo> adjacentSlotsList;
+
+
 
     private void Awake()
     {
@@ -78,6 +83,10 @@ public class SlotInfo : MonoBehaviour
         return isFluxed;
     }
 
+    public void SetIsFluxed(bool isActive)
+    {
+        isFluxed = isActive;
+    }
     public float FluxingProcess()
     {
         if(isFluxed==false)

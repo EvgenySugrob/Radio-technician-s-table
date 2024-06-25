@@ -35,6 +35,15 @@ public class DragAndRotation : MonoBehaviour
         axis.performed += context => { rotation = context.ReadValue<Vector2>(); };
     }
 
+    private void SpacePress_performed(InputAction.CallbackContext obj)
+    {
+        if(draggedObject != null)
+        {
+            draggedObject.TryGetComponent<PopupMenuObjectType>(out var popupMenu);
+            popupMenu.RotateObjectSpacePress();
+        }
+    }
+
     private void MouseRightInput(InputAction.CallbackContext obj)
     {
         if (draggedObject != null)

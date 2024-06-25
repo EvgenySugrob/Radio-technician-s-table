@@ -21,4 +21,8 @@ public class PopupMenuObjectType : MonoBehaviour
     {
         popupMenuCustom.OpenPopupMenu(gameObject, typeInterectableObject);
     }
+    public void RotateObjectSpacePress()
+    {
+        popupMenuCustom.SpacePressRotationSwap(gameObject);
+    }
 }

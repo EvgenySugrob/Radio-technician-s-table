@@ -55,6 +55,17 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
 
     public void RotationSwap()
     {
+        Rotate();
+        ClosePopupMenu();
+    }
+    public void SpacePressRotationSwap(GameObject selectedObject)
+    {
+        draggedObject= selectedObject;
+        Rotate();
+        draggedObject = null;
+    }
+    private void Rotate()
+    {
         isSwap = !isSwap;
 
         if (isSwap)
@@ -66,7 +77,7 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             dragAndDrop.enabled = false;
             draggedObject.GetComponent<DragItem>()?.onEndDrag();
         }
-        else 
+        else
         {
             buttonsMenuList[0].transform.GetChild(1).GetComponent<TMP_Text>().text = "Повернуть";
 
@@ -75,9 +86,7 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             dragAndDrop.enabled = true;
             draggedObject.GetComponent<DragItem>()?.onStartDrag();
         }
-        ClosePopupMenu();
     }
-
     public void TakeObject()
     {
         GameObject revDragObj = draggedObject;

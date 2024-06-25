@@ -45,7 +45,6 @@ public class LegsSolderingProgress : MonoBehaviour
         {
             progressDone = true;
             checkSolderOnLegsElement.CheckLegsSoldering();
-            Debug.Log("Перегрев ножки элемента");
         }
         return amountForBar;
     }
@@ -54,7 +53,9 @@ public class LegsSolderingProgress : MonoBehaviour
     {
         currentUnsolderingProgress += Time.deltaTime;
         amountUnsolderingBar = currentUnsolderingProgress / unsolderingDuration;
-        if(currentUnsolderingProgress>=unsolderingDuration)
+
+        solderLegsScale.localScale = Vector3.Lerp(solderLegsScale.localScale, Vector3.zero, amountForBar);
+        if (currentUnsolderingProgress>=unsolderingDuration)
         {
             progressDone = false;
             checkSolderOnLegsElement.CheckLegsUnsoldering();

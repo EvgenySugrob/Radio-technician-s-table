@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -21,6 +22,7 @@ public class DragAndDrop : MonoBehaviour
 
     [Header("Rotation")]
     [SerializeField] private DragAndRotation dragAndRotation;
+    [SerializeField] private PressButtonRotationModeSwap pressButtonRotationMode;
 
     [Header("Popup Menu and UI")]
     [SerializeField] PopupMenuCustom popupMenuCustom;
@@ -61,11 +63,11 @@ public class DragAndDrop : MonoBehaviour
     {
         mouseInput.Enable();
         mouseRightInput.Enable();
-
        
         mouseRightInput.performed += MouseRightInput;
         mouseInput.performed += MousePressed;
     }
+
 
 
     private void OnDisable()
@@ -76,7 +78,6 @@ public class DragAndDrop : MonoBehaviour
         mouseRightInput.Disable();
         mouseInput.Disable();
     }
-
 
     private void MouseRightInput(InputAction.CallbackContext obj)
     {
@@ -118,6 +119,7 @@ public class DragAndDrop : MonoBehaviour
                     }
                     
                     dragAndRotation.SetObjectRotation(draggedObject);
+                    pressButtonRotationMode.SetDraggedObject(draggedObject);
                     isDrag = true;
                     hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
 
@@ -129,6 +131,7 @@ public class DragAndDrop : MonoBehaviour
                     iDragComponent.isMovebale = false;
                     draggedObject = null;
                     dragAndRotation.SetObjectRotation(draggedObject);
+                    pressButtonRotationMode.SetDraggedObject(draggedObject);
                     isDrag = false;
                     //hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
                 }
@@ -253,26 +256,6 @@ public class DragAndDrop : MonoBehaviour
                     regulatorCheck = false;
                 }
             }
-                
-
-
-            //if (mouseInput.ReadValue<float>() != 0)
-            //{
-            //    float currentDistanceBetweenMousePosition = (Input.mousePosition - pressPoint).x;
-
-            //    endAxisRotationX = startAxisRotationX - currentDistanceBetweenMousePosition;
-
-            //    Debug.Log(endAxisRotationX);
-            //    regulator.transform.localRotation = startRotation * Quaternion.Euler
-            //        (Vector3.left * currentDistanceBetweenMousePosition
-            //        );
-
-            //}
-            //else
-            //{
-            //    regulatorCheck = false;
-            //    regulator= null;
-            //}
         }
     }
 
@@ -343,6 +326,10 @@ public class DragAndDrop : MonoBehaviour
             {
                 currentDistanceToObject = 0.19f;
             }
+            else
+            {
+                currentDistanceToObject = 0.25f;
+            }
             
         }
         else if (draggedObject.GetComponent<SolderInteract>())
@@ -362,5 +349,14 @@ public class DragAndDrop : MonoBehaviour
     public void SetCustomCurrentDistanceToObject(float distance)
     {
         currentDistanceToObject = distance;
+    }
+
+    public void SpaceRotate()
+    {
+        if (draggedObject != null && checkOpenUIComponent.NonActiveUIComponent() && draggedObject.GetComponent<NoPopupMenu>() == null)
+        {
+            draggedObject.TryGetComponent<PopupMenuObjectType>(out var popupMenu);
+            popupMenu.RotateObjectSpacePress();
+        }
     }
 }
