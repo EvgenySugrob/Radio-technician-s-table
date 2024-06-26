@@ -24,7 +24,6 @@ public class Tweezers : MonoBehaviour
 
     [SerializeField] bool isLittleTweezers;
 
-
     private Quaternion firstPartStartRotation;
     private Quaternion secondPartStartRotation;
 
@@ -44,8 +43,16 @@ public class Tweezers : MonoBehaviour
     [SerializeField] CottonSwabControl cottonSwabControl;
     private Transform hideSlot;
 
+    [Header("OrtoViewMeshOff")]
+    [SerializeField] List<MeshRenderer> allPartTweezersRenderer;
+    [SerializeField] Transform board;
+    [SerializeField] RotationHolderPivot rotationHolderPivot;
+
+    private Quaternion startRotation;
+
     private void Start()
     {
+        startRotation = transform.rotation;
         firstPartStartRotation = firstPart.localRotation;
         secondPartStartRotation= secondPart.localRotation;
     }
@@ -163,37 +170,91 @@ public class Tweezers : MonoBehaviour
     {
         takeDropRadioElement.EnableButtonOrtoView(isActive,isLittleTweezers);
     }
+    public void TransparentMaterial(bool isActive)
+    {
+        if (isActive)
+        {
+            foreach (MeshRenderer meshRenderer in allPartTweezersRenderer)
+            {
+                meshRenderer.material.color = new Color(meshRenderer.material.color.r, meshRenderer.material.color.g,
+                    meshRenderer.material.color.b, 0);
+            }
+        }
+        else
+        {
+            foreach (MeshRenderer meshRenderer in allPartTweezersRenderer)
+            {
+                meshRenderer.material.color = new Color(meshRenderer.material.color.r, meshRenderer.material.color.g,
+                    meshRenderer.material.color.b, 1);
+            }
+        }
+    }
 
     public bool IsLittleTweezers()
     {
         return isLittleTweezers;
     }
-
-
-    public void SlotSet()
+    private void CorrectSetSlot()
     {
-        if(nearSlot.GetComponent<SlotInfo>().IsFluxed())
+        transform.TryGetComponent<IDrag>(out var drag);
+        drag.onFreeze(true);
+
+        isSlotSet = true;
+        takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
+        radioElement.GetComponent<PrefabRisistNominalSetting>().SetSlot(nearSlot);
+        SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
+        TypeRadioElement type = radioElement.GetComponent<PrefabRisistNominalSetting>().typeRadioElement;
+
+        transform.position = slot.GetRadioElementTypePosition(type, radioElement).position;
+        slot.OccupiedSlot(true);
+        transform.parent = board;
+        dragAndDrop.ClearHand();
+    }
+    private void SetSlotComponentSMD()
+    {
+        if (nearSlot.GetComponent<SlotInfo>().IsFluxed())
         {
-            transform.TryGetComponent<IDrag>(out var drag);
-            drag.onFreeze(true);
-
-            isSlotSet = true;
-            takeDropRadioElement.EnableButtonSlotsInfo(false, isLittleTweezers);
-            radioElement.GetComponent<PrefabRisistNominalSetting>().SetSlot(nearSlot);
-            SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
-            TypeRadioElement type = radioElement.GetComponent<PrefabRisistNominalSetting>().typeRadioElement;
-
-            transform.position = slot.GetRadioElementTypePosition(type, radioElement).position;
-            slot.OccupiedSlot(true);
-            dragAndDrop.ClearHand();
+            CorrectSetSlot();
         }
         else
         {
             Debug.Log("Необходимо нанести флюс");
         }
     }
+    private void SetSlotComponentWithLegs()
+    {
+        TypeRadioElement type = radioElement.GetComponent<PrefabRisistNominalSetting>().typeRadioElement;
+        if (nearSlot.GetComponent<SlotInfo>().IsPossibleInstalElement(type,radioElement))
+        {
+            if (nearSlot.GetComponent<SlotInfo>().IsFluxedElementsWithLegs(type,radioElement))
+            {
+                CorrectSetSlot();
+            }
+            else
+            {
+                Debug.Log("Необходимо нанести флюс");
+            }
+        }
+        else
+        {
+            Debug.Log("Не возможно установить компонент");
+        }
+    }
+    public void SlotSet()
+    {
+        if (nearSlot.GetComponent<SlotInfo>().IsComponentWithLegs())
+        {
+            SetSlotComponentWithLegs();
+        }
+        else
+        {
+            SetSlotComponentSMD();
+        }
+        
+    }
     public void SlotRemove()
     {
+        transform.parent = null;
         SlotInfo slot = nearSlot.GetComponent<SlotInfo>();
         hideSlot = nearSlot;
 
@@ -216,6 +277,7 @@ public class Tweezers : MonoBehaviour
 
     public void ReleaseSolderedElement()
     {
+        transform.parent = null;
         radioElement.TryGetComponent<PrefabRisistNominalSetting>(out var prefabSetting);
         firstPart.localRotation = firstPartStartRotation;
         secondPart.localRotation = secondPartStartRotation;
@@ -252,7 +314,16 @@ public class Tweezers : MonoBehaviour
     }
     public void TweezersSetOffsetFreeze()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y + offsetTweezerAfterRelease,
+        if (rotationHolderPivot.IsChangeRotation())
+        {
+            transform.position= new Vector3(transform.position.x, transform.position.y + offsetTweezerAfterRelease,
             transform.position.z);
+            transform.rotation = startRotation;
+        }
+        else
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y + offsetTweezerAfterRelease,
+            transform.position.z);
+        }
     }
 }

@@ -59,8 +59,8 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     [SerializeField] Transform slot;
 
     public double resistNominal { get; set; }
-    [SerializeField] bool isSolderOnSLot; 
-
+    [SerializeField] bool isSolderOnSLot;
+    [SerializeField] string contextFilmResistName; 
     
 
     private void Start()
@@ -324,5 +324,10 @@ public class PrefabRisistNominalSetting : MonoBehaviour
         tweezers.TakeElementRemove();
         //tweezers.TweezersFreezeWithoutPopupMenu();
         tweezers.TweezersSetOffsetFreeze();
+    }
+
+    public string ReturnContextFilmResistName()
+    {
+        return contextFilmResistName;
     }
 }

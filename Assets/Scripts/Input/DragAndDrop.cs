@@ -52,6 +52,8 @@ public class DragAndDrop : MonoBehaviour
 
     [SerializeField] PlayerController playerController;
 
+    private float currentDistanceBeforeOrtoview;
+
     private void Awake()
     {
         mainCamera = Camera.main;
@@ -320,6 +322,7 @@ public class DragAndDrop : MonoBehaviour
 
     public void OrtoViewParam()
     {
+        currentDistanceBeforeOrtoview = currentDistanceToObject;
         if (draggedObject.GetComponent<Tweezers>())
         {
             if(draggedObject.GetComponent<Tweezers>().IsLittleTweezers())
@@ -358,5 +361,9 @@ public class DragAndDrop : MonoBehaviour
             draggedObject.TryGetComponent<PopupMenuObjectType>(out var popupMenu);
             popupMenu.RotateObjectSpacePress();
         }
+    }
+    public void RecoveryCurrentDistance()
+    {
+        currentDistanceToObject = currentDistanceBeforeOrtoview;
     }
 }

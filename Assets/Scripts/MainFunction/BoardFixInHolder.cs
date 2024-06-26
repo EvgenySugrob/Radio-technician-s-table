@@ -10,8 +10,6 @@ public class BoardFixInHolder : MonoBehaviour
     [SerializeField] BoxCollider boardHolderCollider;
     [SerializeField] bool boardIsLock;
 
-
-
     private void Start()
     {
         triggerZone = GetComponent<BoxCollider>();
@@ -46,5 +44,10 @@ public class BoardFixInHolder : MonoBehaviour
         triggerZone.enabled = isOn;
         boardHolderCollider.enabled = !isOn;
         boardIsLock = !isOn;
+    }
+
+    public bool IsBoardLock()
+    {
+        return boardIsLock;
     }
 }

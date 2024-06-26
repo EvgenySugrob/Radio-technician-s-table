@@ -73,6 +73,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
     {
         tweezers = dragAndDrop.GetDraggedObject().GetComponent<Tweezers>();
         tweezers.ActiveOrtoViewBt(false);
+        tweezers.TransparentMaterial(true);
     }
     private void SwabInHand()
     {
@@ -90,9 +91,9 @@ public class OrtoViewCameraPosition : MonoBehaviour
         objectInHandNow.GetComponent<SolderInteract>().StartSolderingDetectionSlot(false);
     }
 
-
     public void ReturnToMainView()
     {
+        dragAndDrop.RecoveryCurrentDistance();
         player.GetComponent<PlayerController>().enabled = false;
 
         if (objectInHandNow != null)
@@ -104,6 +105,10 @@ public class OrtoViewCameraPosition : MonoBehaviour
             else if (objectInHandNow.GetComponent<CottonSwabControl>())
             {
                 DisableSwabInHand();
+            }
+            else if(objectInHandNow.GetComponent<Tweezers>())
+            {
+                objectInHandNow.GetComponent<Tweezers>().TransparentMaterial(false);
             }
             playerCamera.GetComponent<Camera>().orthographic = false;
         }
