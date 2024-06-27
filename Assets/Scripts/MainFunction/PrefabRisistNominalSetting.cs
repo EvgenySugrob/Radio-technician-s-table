@@ -60,7 +60,8 @@ public class PrefabRisistNominalSetting : MonoBehaviour
 
     public double resistNominal { get; set; }
     [SerializeField] bool isSolderOnSLot;
-    [SerializeField] string contextFilmResistName; 
+    [SerializeField] string contextFilmResistName;
+    [SerializeField] CheckSolderOnLegsElement checkSolderOnLegsElement; 
     
 
     private void Start()
@@ -68,6 +69,12 @@ public class PrefabRisistNominalSetting : MonoBehaviour
         startRotation = transform.localRotation;
         prefabRisistNominal = GetComponent<PrefabRisistNominalSetting>();
         rb= GetComponent<Rigidbody>();
+        checkSolderOnLegsElement = transform.GetChild(0).GetComponent<CheckSolderOnLegsElement>();
+    }
+
+    public void SetTweezersGrab(bool isGrab)
+    {
+        checkSolderOnLegsElement.IsGrabTweezersLegsCheck(isGrab);
     }
 
     public void SetFirstColor(int value)
@@ -321,6 +328,7 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     public void FullUnsolderingElement()
     {
         isSolderOnSLot = false;
+        checkSolderOnLegsElement.IsGrabTweezersLegsCheck(false);
         tweezers.TakeElementRemove();
         //tweezers.TweezersFreezeWithoutPopupMenu();
         tweezers.TweezersSetOffsetFreeze();

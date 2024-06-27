@@ -16,6 +16,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
     [Header("BoardPoint")]
     [SerializeField] Transform boardOrtoViewPosition;
+    [SerializeField] Transform boardOrtoviewPositionSwap;
     [SerializeField] BoxCollider triggerZonePopupBt;
     [SerializeField] Tweezers tweezers;
     [SerializeField] List<GameObject> boardSlots;
@@ -24,9 +25,11 @@ public class OrtoViewCameraPosition : MonoBehaviour
     [Header("UI")]
     [SerializeField] GameObject buttonBack;
 
+    [SerializeField] Tweezers bigTweezer;
+
     public void StartOrtoView()
     {
-        player.GetComponent<PlayerController>().enabled =false;
+        player.GetComponent<PlayerController>().enabled = false;
         objectInHandNow = dragAndDrop.GetDraggedObject();
 
         if(objectInHandNow.GetComponent<Tweezers>())
@@ -47,7 +50,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
         {
             SwabInHand();
         }
-
+        bigTweezer.TransparentMaterial(true);
         virtualCamera.enabled = false;
         startPosition = player.position;
         startRotation = playerCamera.rotation;
@@ -56,8 +59,16 @@ public class OrtoViewCameraPosition : MonoBehaviour
         playerCamera.GetComponent<Camera>().orthographic = true;
         dragAndDrop.OrtoViewParam();
 
-        player.position = boardOrtoViewPosition.position;
-        playerCamera.rotation = boardOrtoViewPosition.rotation;
+        if(Vector3.Distance(player.position,boardOrtoViewPosition.position) < Vector3.Distance(player.position, boardOrtoviewPositionSwap.position))
+        {
+            player.position = boardOrtoViewPosition.position;
+            playerCamera.rotation = boardOrtoViewPosition.rotation;
+        }
+        else
+        {
+            player.position = boardOrtoviewPositionSwap.position;
+            playerCamera.rotation = boardOrtoviewPositionSwap.rotation;
+        }
 
         buttonBack.SetActive(true);
 
@@ -73,7 +84,6 @@ public class OrtoViewCameraPosition : MonoBehaviour
     {
         tweezers = dragAndDrop.GetDraggedObject().GetComponent<Tweezers>();
         tweezers.ActiveOrtoViewBt(false);
-        tweezers.TransparentMaterial(true);
     }
     private void SwabInHand()
     {
@@ -108,10 +118,13 @@ public class OrtoViewCameraPosition : MonoBehaviour
             }
             else if(objectInHandNow.GetComponent<Tweezers>())
             {
-                objectInHandNow.GetComponent<Tweezers>().TransparentMaterial(false);
+                //objectInHandNow.GetComponent<Tweezers>().TransparentMaterial(false);
+                objectInHandNow.GetComponent<Tweezers>().RemoveParent();
             }
             playerCamera.GetComponent<Camera>().orthographic = false;
         }
+        bigTweezer.TransparentMaterial(false);
+
         buttonBack.SetActive(false);
 
         player.GetComponent<PlayerController>().ActiveOrtoView(false);

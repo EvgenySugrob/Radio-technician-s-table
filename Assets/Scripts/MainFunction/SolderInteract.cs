@@ -138,6 +138,12 @@ public class SolderInteract : MonoBehaviour
         }
     }
 
+    public void ResetBadProgress()
+    {
+        badProgress.fillAmount = 0f;
+
+    }
+
     private void IronTinning()
     {
         if(isIronTinnig)
@@ -206,7 +212,7 @@ public class SolderInteract : MonoBehaviour
     }
     private void BadHoldSolder()
     {
-        if(isReady && isSolderingPoint)
+        if(isReady && isSolderingPoint && radioelementSlot.GetComponent<LegsSolderingProgress>().ReturnTweezersGrab())
         {
             if(holdTimer>=holdDuration)
             {
@@ -218,6 +224,11 @@ public class SolderInteract : MonoBehaviour
                     Debug.Log("Перегрел");
                 }
             }
+        }
+        else
+        {
+            badTimer = 0;
+            badProgress.fillAmount = 0;
         }
     }
     private void TakingSolder()

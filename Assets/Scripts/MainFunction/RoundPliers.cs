@@ -72,12 +72,12 @@ public class RoundPliers : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if(other.GetComponent<SetTruePositionRoundPliers>())
+        if(other.GetComponent<SetTruePositionRoundPliers>() && other.tag == "Leg")
         {
+            Debug.Log("Leg" + other.name);
             isTruePosition = true;
             modelingActiveButton.SetActive(true);
             currentHitObject = other.gameObject;
-            Debug.Log("Stay " + other.name);
         }
         else if(other.GetComponent<SetTruePositionRoundPliers>() == false)
         {

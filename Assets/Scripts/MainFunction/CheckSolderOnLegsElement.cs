@@ -9,7 +9,6 @@ public class CheckSolderOnLegsElement : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log(transform.childCount);
         prefabRisistNominalSetting = transform.parent.GetComponent<PrefabRisistNominalSetting>();
 
         //for (int i = 0; i < transform.childCount; i++)
@@ -54,6 +53,14 @@ public class CheckSolderOnLegsElement : MonoBehaviour
             {
                 legs.SetFluxing(false);
             }
+        }
+    }
+
+    public void IsGrabTweezersLegsCheck(bool isGrab)
+    {
+        foreach (LegsSolderingProgress leg in legsSolderingProgressesList)
+        {
+            leg.TweezersGrab(isGrab);
         }
     }
 }

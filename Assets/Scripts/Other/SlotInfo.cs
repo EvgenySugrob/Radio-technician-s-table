@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class SlotInfo : MonoBehaviour
@@ -31,7 +32,7 @@ public class SlotInfo : MonoBehaviour
     [Header("Adjacent slots")]
     [SerializeField] bool isComponentWithLegs;
     [SerializeField] List<SlotInfo> adjacentSlotsList;
-
+    private TypeRadioElement typeElement;
 
 
     private void Awake()
@@ -44,6 +45,7 @@ public class SlotInfo : MonoBehaviour
 
     public Transform GetRadioElementTypePosition(TypeRadioElement typeRadioElement, GameObject radioelement)
     {
+        typeElement = typeRadioElement;
         Transform radioelementTransform = capasitorTransform;
         radioelementInSlot = radioelement;
         switch (typeRadioElement)
@@ -70,6 +72,24 @@ public class SlotInfo : MonoBehaviour
     public void OccupiedSlot(bool isTrue)
     {
         isOccupied = isTrue;
+
+        if (adjacentSlotsList.Count>0 && isComponentWithLegs)
+        {
+            switch (typeElement)
+            {
+                case TypeRadioElement.Capacitor:
+                    CapasitorSlotsIsOccupied(isTrue);
+                    break;
+                case TypeRadioElement.FilmResist:
+                    FilmResistSlotsIsOccupied(isTrue, radioelementInSlot.GetComponent<PrefabRisistNominalSetting>().
+                    ReturnContextFilmResistName());
+                    break;
+            }
+        }
+    }
+    public void SetRadioelement(GameObject element)
+    {
+        radioelementInSlot = element;
     }
     public void RemoveRadioelementInSlot()
     {
@@ -135,12 +155,12 @@ public class SlotInfo : MonoBehaviour
     public bool IsFluxedElementsWithLegs(TypeRadioElement type, GameObject radioelement)
     {
         bool isFlux = false;
-
         switch (type)
         {
             case TypeRadioElement.Capacitor:
-                isFlux = !isFluxed;
+                isFlux = isFluxed;
                 break;
+
             case TypeRadioElement.FilmResist:
                 isFlux = CheckAddjacentResistIsFlux(radioelement.GetComponent<PrefabRisistNominalSetting>().
                     ReturnContextFilmResistName());
@@ -155,42 +175,18 @@ public class SlotInfo : MonoBehaviour
 
         if (isFluxed)
         {
-            isCheck = false;
-        }
-        else
-        {
             isCheck = true;
             if (adjacentSlotsList.Last().isFluxed)
             {
-                isCheck = false;
+                isCheck = true;
             }
         }
+        else
+        {
+            isCheck = false;
+            
+        }
         return isCheck;
-        //switch (contextNameResist)
-        //{
-        //    case "1_2W":
-        //        if (isFluxed)
-        //        {
-        //            isCheck = false;
-        //        }
-        //        else
-        //        {
-        //            isCheck= true;
-        //            if(adjacentSlotsList.Last().isFluxed)
-        //            {
-        //                isCheck = false;
-        //            }
-        //        }
-        //        break;
-
-        //    case "1_4W":
-
-        //        break;
-
-        //    case "1_8W":
-
-        //        break;
-        //}
     }
     private bool CheckAddjacentCapasitorSlotIsOccupied()
     {
@@ -293,5 +289,38 @@ public class SlotInfo : MonoBehaviour
         }
 
         return corretcPosition;
+    }
+
+    private void CapasitorSlotsIsOccupied(bool isLock)
+    {
+        foreach (SlotInfo slot in adjacentSlotsList)
+        {
+            slot.isOccupied = isLock;
+            slot.SetRadioelement(radioelementInSlot);
+        }
+    }
+
+    private void FilmResistSlotsIsOccupied(bool isLock, string contextName)
+    {
+        switch (contextName)
+        {
+            case "1_2W":
+                foreach (SlotInfo slot in adjacentSlotsList)
+                {
+                    slot.isOccupied = isLock;
+                    slot.SetRadioelement(radioelementInSlot);
+                }
+                break;
+
+            case "1_4W":
+                adjacentSlotsList.Last().isOccupied = isLock;
+                adjacentSlotsList.Last().SetRadioelement(radioelementInSlot);
+                break;
+
+            case "1_8W":
+                adjacentSlotsList.Last().isOccupied = isLock;
+                adjacentSlotsList.Last().SetRadioelement(radioelementInSlot);
+                break;
+        }
     }
 }

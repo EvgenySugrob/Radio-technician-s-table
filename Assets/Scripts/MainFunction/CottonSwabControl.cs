@@ -65,6 +65,7 @@ public class CottonSwabControl : MonoBehaviour
         {
             ortoViewBt.SetActive(isActive);
         }
+
         if(isActive == false)
         {
             popupMenuCustom.ClosePopupMenu();

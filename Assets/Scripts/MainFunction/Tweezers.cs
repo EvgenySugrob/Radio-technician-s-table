@@ -41,7 +41,7 @@ public class Tweezers : MonoBehaviour
     [Header("CottonSwab")]
     [SerializeField] CottonSwabSpawn cottonSwabSpawn;
     [SerializeField] CottonSwabControl cottonSwabControl;
-    private Transform hideSlot;
+    [SerializeField]private Transform hideSlot;
 
     [Header("OrtoViewMeshOff")]
     [SerializeField] List<MeshRenderer> allPartTweezersRenderer;
@@ -125,6 +125,7 @@ public class Tweezers : MonoBehaviour
         isTakeElement = true;
         takeDropRadioElement.AllButtonDisable();
         hideSlot.GetComponent<SlotInfo>().isOccupied= false;
+        hideSlot.GetComponent<SlotInfo>().OccupiedSlot(false);
         hideSlot.GetComponent<SlotInfo>().isRedyToRemove= false;
         hideSlot.GetComponent<SlotInfo>().SetIsFluxed(false);
     }
@@ -189,6 +190,10 @@ public class Tweezers : MonoBehaviour
             }
         }
     }
+    public void RemoveParent()
+    {
+        //transform.parent = null;
+    }
 
     public bool IsLittleTweezers()
     {
@@ -224,6 +229,7 @@ public class Tweezers : MonoBehaviour
     private void SetSlotComponentWithLegs()
     {
         TypeRadioElement type = radioElement.GetComponent<PrefabRisistNominalSetting>().typeRadioElement;
+
         if (nearSlot.GetComponent<SlotInfo>().IsPossibleInstalElement(type,radioElement))
         {
             if (nearSlot.GetComponent<SlotInfo>().IsFluxedElementsWithLegs(type,radioElement))
@@ -237,17 +243,19 @@ public class Tweezers : MonoBehaviour
         }
         else
         {
-            Debug.Log("Не возможно установить компонент");
+            Debug.Log("Невозможно установить компонент");
         }
     }
     public void SlotSet()
     {
         if (nearSlot.GetComponent<SlotInfo>().IsComponentWithLegs())
         {
+            Debug.Log("слот под Элемент с ножками");
             SetSlotComponentWithLegs();
         }
         else
         {
+            Debug.Log("слот под Элемент без ножек");
             SetSlotComponentSMD();
         }
         
@@ -265,6 +273,7 @@ public class Tweezers : MonoBehaviour
         transform.position = connectPosition.position;
         slot.isRedyToRemove= true;
         nominalSetting.SetTweezers(transform);
+        nominalSetting.SetTweezersGrab(true);
 
         firstPart.localRotation = Quaternion.Euler(0, -nominalSetting.GetConectionAngle(), 0);
         secondPart.localRotation = Quaternion.Euler(0, nominalSetting.GetConectionAngle(), 0);

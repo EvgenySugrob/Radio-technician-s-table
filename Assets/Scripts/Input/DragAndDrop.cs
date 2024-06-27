@@ -53,12 +53,14 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] PlayerController playerController;
 
     private float currentDistanceBeforeOrtoview;
+    private float defaultDistance;
 
     private void Awake()
     {
         mainCamera = Camera.main;
         
         currentDistanceToObject = distanceToObject;
+        defaultDistance= currentDistanceToObject;
     }
 
     private void OnEnable()
@@ -110,8 +112,9 @@ public class DragAndDrop : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 100f, layerMask))
             {
-                
-                if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null && solderStationDetect.detect == false)
+
+                if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null && solderStationDetect.detect == false
+                    /*&& playerController.IsActiveOrtoView() == false*/)
                 {
                     draggedObject = hit.collider.gameObject;
                     if (draggedObject.GetComponent<SolderInteract>() != null)
@@ -126,7 +129,7 @@ public class DragAndDrop : MonoBehaviour
                     hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
 
                 }
-                else if (draggedObject != null)
+                else if (draggedObject != null && playerController.IsActiveOrtoView() == false)
                 {
                     draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
                     iDragComponent?.onEndDrag();
@@ -272,6 +275,7 @@ public class DragAndDrop : MonoBehaviour
         {
             isHoldingSolder = false;
             draggedObject.GetComponent<SolderInteract>().StopSoldering();
+            draggedObject.GetComponent<SolderInteract>().ResetBadProgress();
         }
     }
 
@@ -331,7 +335,7 @@ public class DragAndDrop : MonoBehaviour
             }
             else
             {
-                currentDistanceToObject = 0.25f;
+                currentDistanceToObject = 0.19f;
             }
             
         }
@@ -364,6 +368,6 @@ public class DragAndDrop : MonoBehaviour
     }
     public void RecoveryCurrentDistance()
     {
-        currentDistanceToObject = currentDistanceBeforeOrtoview;
+        //currentDistanceToObject = currentDistanceBeforeOrtoview;
     }
 }

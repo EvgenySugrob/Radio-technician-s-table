@@ -22,12 +22,23 @@ public class LegsSolderingProgress : MonoBehaviour
     [SerializeField] float currentUnsolderingProgress;
     private float amountUnsolderingBar;
 
+    [SerializeField] bool isTweezersGrab;
+
     private float amountForBar;
 
     private void Awake()
     {
         solderLegsScale = transform.GetChild(0).transform;
         checkSolderOnLegsElement = transform.parent.GetComponent<CheckSolderOnLegsElement>();
+    }
+
+    public void TweezersGrab(bool isGrab)
+    {
+        isTweezersGrab = isGrab;
+    }
+    public bool ReturnTweezersGrab()
+    {
+        return isTweezersGrab;
     }
     public void SetFinalProgress(float duration)
     {
