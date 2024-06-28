@@ -40,6 +40,10 @@ public class OrtoViewCameraPosition : MonoBehaviour
         {
             SolderInHand();
         }
+        if(objectInHandNow.GetComponent<SideCuttersMain>())
+        {
+            SiderCuttersInHand();
+        }
 
         triggerZonePopupBt.enabled = false;
         foreach (GameObject slotsGroup in boardSlots)
@@ -75,6 +79,11 @@ public class OrtoViewCameraPosition : MonoBehaviour
         player.GetComponent<PlayerController>().enabled = true;
         //isMove = true;
     }
+    private void SiderCuttersInHand()
+    {
+        objectInHandNow.GetComponent<SideCuttersMain>().ActiveOrtoviewBt(false);
+    }
+
     private void SolderInHand()
     {
         objectInHandNow.GetComponent<SolderInteract>().ActiveOrtoBt(false);

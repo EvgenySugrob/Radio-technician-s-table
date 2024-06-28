@@ -44,6 +44,10 @@ public class DetectionRadioElements : MonoBehaviour
         {
             other.GetComponent<CottonSwabControl>().ActiveOrtoview(true);
         }
+        else if(other.tag == "SideCutters")
+        {
+            other.GetComponent<SideCuttersMain>().ActiveOrtoviewBt(true);
+        }
     }
 
     private void OnTriggerExit(Collider other)

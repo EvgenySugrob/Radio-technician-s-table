@@ -250,8 +250,16 @@ public class Tweezers : MonoBehaviour
     {
         if (nearSlot.GetComponent<SlotInfo>().IsComponentWithLegs())
         {
-            Debug.Log("слот под Ёлемент с ножками");
-            SetSlotComponentWithLegs();
+            if(radioElement.GetComponent<PrefabRisistNominalSetting>().IsLegsBendComplite())
+            {
+                Debug.Log("слот под Ёлемент с ножками");
+                SetSlotComponentWithLegs();
+            }
+            else
+            {
+                Debug.Log("Ќеобходимо выполнить формовку выводов");
+            }
+            
         }
         else
         {

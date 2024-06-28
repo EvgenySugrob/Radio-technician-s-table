@@ -1,3 +1,4 @@
+using Deform;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -61,7 +62,11 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     public double resistNominal { get; set; }
     [SerializeField] bool isSolderOnSLot;
     [SerializeField] string contextFilmResistName;
-    [SerializeField] CheckSolderOnLegsElement checkSolderOnLegsElement; 
+    [SerializeField] CheckSolderOnLegsElement checkSolderOnLegsElement;
+
+    [Header("DetectBendLegs")]
+    [SerializeField] List<BendDeformer> bendDeformers;
+    [SerializeField] bool needBendLegs;
     
 
     private void Start()
@@ -71,6 +76,8 @@ public class PrefabRisistNominalSetting : MonoBehaviour
         rb= GetComponent<Rigidbody>();
         checkSolderOnLegsElement = transform.GetChild(0).GetComponent<CheckSolderOnLegsElement>();
     }
+
+
 
     public void SetTweezersGrab(bool isGrab)
     {
@@ -337,5 +344,24 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     public string ReturnContextFilmResistName()
     {
         return contextFilmResistName;
+    }
+
+    public bool IsLegsBendComplite()
+    {
+        bool isComplite = true;
+
+        if(needBendLegs)
+        {
+            foreach (BendDeformer bend in bendDeformers)
+            {
+                if (bend.Angle != 90)
+                {
+                    isComplite = false;
+                    break;
+                }
+            }
+        }
+
+        return isComplite;
     }
 }

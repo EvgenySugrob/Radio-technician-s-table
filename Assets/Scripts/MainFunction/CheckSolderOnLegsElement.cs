@@ -6,6 +6,7 @@ public class CheckSolderOnLegsElement : MonoBehaviour
 {
     [SerializeField] PrefabRisistNominalSetting prefabRisistNominalSetting;
     [SerializeField] List<LegsSolderingProgress> legsSolderingProgressesList;
+    [SerializeField] List<LegPrepareToCut> legPrepareToCutList;
 
     private void Awake()
     {
@@ -33,6 +34,10 @@ public class CheckSolderOnLegsElement : MonoBehaviour
         if(countSolderingLegs == legsSolderingProgressesList.Count)
         {
             prefabRisistNominalSetting.FullSolderingElement(true);
+            foreach (LegPrepareToCut leg in legPrepareToCutList)
+            {
+                leg.RedyToCat(true);
+            }
         }
     }
 

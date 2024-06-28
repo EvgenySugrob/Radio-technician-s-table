@@ -55,6 +55,7 @@ public class LegsSolderingProgress : MonoBehaviour
         if(currentProgress>=finalProgress)
         {
             progressDone = true;
+
             checkSolderOnLegsElement.CheckLegsSoldering();
         }
         return amountForBar;
@@ -69,6 +70,7 @@ public class LegsSolderingProgress : MonoBehaviour
         if (currentUnsolderingProgress>=unsolderingDuration)
         {
             progressDone = false;
+
             checkSolderOnLegsElement.CheckLegsUnsoldering();
         }
 

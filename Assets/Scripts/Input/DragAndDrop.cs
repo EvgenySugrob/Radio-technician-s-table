@@ -337,7 +337,7 @@ public class DragAndDrop : MonoBehaviour
             {
                 currentDistanceToObject = 0.19f;
             }
-            
+            draggedObject.transform.localEulerAngles = new Vector3(0, 90, 0);
         }
         else if (draggedObject.GetComponent<SolderInteract>())
         {
@@ -346,6 +346,11 @@ public class DragAndDrop : MonoBehaviour
         else if(draggedObject.GetComponent<CottonSwabControl>())
         {
             currentDistanceToObject = 0.19f;
+        }
+        else if(draggedObject.GetComponent<SideCuttersMain>())
+        {
+            currentDistanceToObject = 0.12f;
+            draggedObject.transform.localEulerAngles = new Vector3(0,-90,0);
         }
     }
 
