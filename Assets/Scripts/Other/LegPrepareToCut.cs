@@ -18,6 +18,8 @@ public class LegPrepareToCut : MonoBehaviour
     [Header("DeformLeg")]
     [SerializeField] GameObject deformLeg;
 
+    [SerializeField] QuickOutlineControllerRadioelement controllerRadioelement;
+
     private void Start()
     {
         deteectZoneForSlideCutters = GetComponent<BoxCollider>();
@@ -47,6 +49,7 @@ public class LegPrepareToCut : MonoBehaviour
 
         isCutDone= true;
 
+        controllerRadioelement.CheckCountCuttersLeg(1);
         StartCoroutine(WaitDisableTrashPart());
     }
    

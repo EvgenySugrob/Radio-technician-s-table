@@ -25,6 +25,8 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
     [Header("ObjectToCheck")]
     [SerializeField] List<GameObject> objectInteractList;
 
+    [SerializeField] QuickOutlineDetect quickOutlineDetect; 
+
     private string freezeBtName = "LockObj";
 
     public void OpenPopupMenu(GameObject selectObject, TypeInterectableObject typeInterectable)
@@ -115,6 +117,7 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             dragAndDrop.ClearHand();
         }
         ClosePopupMenu();
+        quickOutlineDetect.DetectionEnable();
     }
     public void ClosePopupMenu()
     {
@@ -162,5 +165,6 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             freezeBt.transform.GetChild(1).GetComponent<TMP_Text>().text = "Разблокирвать";
             drag.onFreeze(true);
         }
+        quickOutlineDetect.DetectionEnable();
     }
 }

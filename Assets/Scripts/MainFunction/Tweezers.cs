@@ -48,6 +48,9 @@ public class Tweezers : MonoBehaviour
     [SerializeField] Transform board;
     [SerializeField] RotationHolderPivot rotationHolderPivot;
 
+    [SerializeField] QuickOutlineControllerRadioelement outlineControllerRadioelement;
+    [SerializeField] bool outlineDetect;
+
     private Quaternion startRotation;
 
     private void Start()
@@ -64,6 +67,13 @@ public class Tweezers : MonoBehaviour
             Debug.Log("TW+");
             takeDropRadioElement.TakeDropButtonActivate(isTakeElement, isLittleTweezers);
             radioElement = other.gameObject;
+
+            if (radioElement.GetComponent<QuickOutlineControllerRadioelement>() && outlineDetect ==false)
+            {
+                outlineControllerRadioelement = radioElement.GetComponent<QuickOutlineControllerRadioelement>();
+                outlineControllerRadioelement.EnableOutline();
+                outlineDetect = true;
+            }
         }
     }
 
@@ -80,6 +90,12 @@ public class Tweezers : MonoBehaviour
     {
         if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers)
         {
+            if (other.GetComponent<QuickOutlineControllerRadioelement>() && outlineDetect)
+            {
+                outlineControllerRadioelement.DisableOutline();
+                outlineDetect= false;
+            }
+              
             takeDropRadioElement.AllButtonDisable();
             radioElement = null;
         }
@@ -141,6 +157,9 @@ public class Tweezers : MonoBehaviour
         isTakeElement = true;
 
         takeDropRadioElement.AllButtonDisable();
+
+        outlineControllerRadioelement.DisableOutline();
+        outlineControllerRadioelement.GlobalActivateDiactivate(false);
     }
     public void DropElement()
     {
@@ -153,6 +172,9 @@ public class Tweezers : MonoBehaviour
         isTakeElement= false;
 
         takeDropRadioElement.AllButtonDisable();
+
+        outlineControllerRadioelement.EnableOutline();
+        outlineControllerRadioelement.GlobalActivateDiactivate(true);
     }
 
     public bool RadioelementIsNull()

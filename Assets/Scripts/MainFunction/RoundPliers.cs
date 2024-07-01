@@ -44,6 +44,9 @@ public class RoundPliers : MonoBehaviour
 
     float vectorDifferenceX;
 
+    [SerializeField] QuickOutlineControllerRadioelement quickOutlineControllerRadioElement;
+
+
     private void Start()
     {
         leftPart = transform.GetChild(0).transform;
@@ -58,6 +61,11 @@ public class RoundPliers : MonoBehaviour
     {
         if (other.GetComponent<Deformable>() || other.GetComponent<SetTruePositionRoundPliers>())
         {
+            if(other.GetComponent<QuickOutlineControllerRadioelement>().onlyLegsDetect)
+            {
+                other.GetComponent<QuickOutlineControllerRadioelement>().LegsDetectOutlineEnable(true);
+                quickOutlineControllerRadioElement = other.GetComponent<QuickOutlineControllerRadioelement>();
+            }
             modelingActiveButton.SetActive(true);
         }
     }
@@ -65,6 +73,11 @@ public class RoundPliers : MonoBehaviour
     {
         if(other.GetComponent<Deformable>())
         {
+            if (other.GetComponent<QuickOutlineControllerRadioelement>().onlyLegsDetect)
+            {
+                other.GetComponent<QuickOutlineControllerRadioelement>().LegsDetectOutlineEnable(false);
+                quickOutlineControllerRadioElement = other.GetComponent<QuickOutlineControllerRadioelement>();
+            }
             Debug.Log("Exit " + other.name);
             modelingActiveButton.SetActive(false);
 

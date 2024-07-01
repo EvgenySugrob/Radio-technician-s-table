@@ -55,6 +55,9 @@ public class DragAndDrop : MonoBehaviour
     private float currentDistanceBeforeOrtoview;
     private float defaultDistance;
 
+    [Header("OutlineDetect")]
+    [SerializeField] QuickOutlineDetect quickOutlineDetect;
+
     private void Awake()
     {
         mainCamera = Camera.main;
@@ -128,6 +131,8 @@ public class DragAndDrop : MonoBehaviour
                     isDrag = true;
                     hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
 
+                    quickOutlineDetect.DetectionDisable();
+
                 }
                 else if (draggedObject != null && playerController.IsActiveOrtoView() == false)
                 {
@@ -138,6 +143,8 @@ public class DragAndDrop : MonoBehaviour
                     dragAndRotation.SetObjectRotation(draggedObject);
                     pressButtonRotationMode.SetDraggedObject(draggedObject);
                     isDrag = false;
+
+                    quickOutlineDetect.DetectionEnable();
                     //hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
                 }
 
