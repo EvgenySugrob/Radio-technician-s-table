@@ -163,6 +163,10 @@ public class DragAndDrop : MonoBehaviour
                 {
                     hit.collider.GetComponent<SwitchOnOff>().ButtonTurnOnOff();
                 }
+                if(hit.collider.GetComponent<SonicPlugInSocket>()!= null && draggedObject == null)
+                {
+                    hit.collider.GetComponent<SonicPlugInSocket>().PlugInSocket();
+                }
 
                 if (hit.collider.GetComponent<TemperatureRegulatorSetting>() != null && draggedObject == null 
                     && solderStationDetect.detect == true)
