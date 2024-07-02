@@ -46,6 +46,9 @@ public class RoundPliers : MonoBehaviour
 
     [SerializeField] QuickOutlineControllerRadioelement quickOutlineControllerRadioElement;
 
+    [Header("LogMessage")]
+    [SerializeField] LogMessageSpawn logMessageSpawn;
+
 
     private void Start()
     {
@@ -112,6 +115,7 @@ public class RoundPliers : MonoBehaviour
         }
         else
         {
+            logMessageSpawn.GetTextMessageInLog(false, "Неверное место формовки.");
             Debug.Log("Неверное место формовки");
         }
     }

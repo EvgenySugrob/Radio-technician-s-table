@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Tweezers : MonoBehaviour
@@ -17,6 +18,7 @@ public class Tweezers : MonoBehaviour
     [SerializeField] GameObject dropButton;
     [SerializeField] TakeDropRadioElement takeDropRadioElement;
     [SerializeField] PopupMenuCustom popupMenuCustom;
+    [SerializeField] bool isOrtoviewActive;
 
     [Header("RotatePart")]
     [SerializeField] Transform firstPart;
@@ -51,6 +53,9 @@ public class Tweezers : MonoBehaviour
     [SerializeField] QuickOutlineControllerRadioelement outlineControllerRadioelement;
     [SerializeField] bool outlineDetect;
 
+    [Header("LogMessage")]
+    [SerializeField] LogMessageSpawn logMessageSpawn;
+
     private Quaternion startRotation;
 
     private void Start()
@@ -62,7 +67,8 @@ public class Tweezers : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers)
+        if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers && isOrtoviewActive == false 
+            && other.GetComponent<PrefabRisistNominalSetting>().ReturnIsSolderOnSlot() == false)
         {
             Debug.Log("TW+");
             takeDropRadioElement.TakeDropButtonActivate(isTakeElement, isLittleTweezers);
@@ -79,7 +85,7 @@ public class Tweezers : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers)
+        if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers && isOrtoviewActive == false && other.GetComponent<PrefabRisistNominalSetting>().ReturnIsSolderOnSlot() == false)
         {
             takeDropRadioElement.TakeDropButtonActivate(isTakeElement, isLittleTweezers);
             radioElement = other.gameObject;
@@ -88,7 +94,7 @@ public class Tweezers : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers)
+        if (other.tag == "RadioElement" && other.GetComponent<PrefabRisistNominalSetting>().GetTypeTweezers() == isLittleTweezers && isOrtoviewActive == false && other.GetComponent<PrefabRisistNominalSetting>().ReturnIsSolderOnSlot() == false)
         {
             if (other.GetComponent<QuickOutlineControllerRadioelement>() && outlineDetect)
             {
@@ -100,7 +106,11 @@ public class Tweezers : MonoBehaviour
             radioElement = null;
         }
     }
-
+    public void PopupMenuOrtoviewButtons(bool isOrtoview)
+    {
+        isOrtoviewActive= isOrtoview;
+        takeDropRadioElement.AllButtonDisable();
+    }
     private void Update()
     {
         if(isSlotSet == false)
@@ -239,13 +249,21 @@ public class Tweezers : MonoBehaviour
     }
     private void SetSlotComponentSMD()
     {
-        if (nearSlot.GetComponent<SlotInfo>().IsFluxed())
+        if(nearSlot.GetComponent<SlotInfo>().TrueContextSlotName(radioElement))
         {
-            CorrectSetSlot();
+            if (nearSlot.GetComponent<SlotInfo>().IsFluxed())
+            {
+                CorrectSetSlot();
+            }
+            else
+            {
+                logMessageSpawn.GetTextMessageInLog(false, "Необходимо нанести флюс.");
+                Debug.Log("Необходимо нанести флюс");
+            }
         }
         else
         {
-            Debug.Log("Необходимо нанести флюс");
+            logMessageSpawn.GetTextMessageInLog(false, "Выбранно неверное посадочное место");
         }
     }
     private void SetSlotComponentWithLegs()
@@ -260,34 +278,46 @@ public class Tweezers : MonoBehaviour
             }
             else
             {
+                logMessageSpawn.GetTextMessageInLog(false, "Необходимо нанести флюс.");
                 Debug.Log("Необходимо нанести флюс");
             }
         }
         else
         {
+            logMessageSpawn.GetTextMessageInLog(false, "Невозможно установить компонент.");
             Debug.Log("Невозможно установить компонент");
         }
     }
     public void SlotSet()
     {
-        if (nearSlot.GetComponent<SlotInfo>().IsComponentWithLegs())
+        if(nearSlot.GetComponent<SlotInfo>().isOccupied == false)
         {
-            if(radioElement.GetComponent<PrefabRisistNominalSetting>().IsLegsBendComplite())
+            if (nearSlot.GetComponent<SlotInfo>().IsComponentWithLegs())
             {
-                Debug.Log("слот под Элемент с ножками");
-                SetSlotComponentWithLegs();
+                if (radioElement.GetComponent<PrefabRisistNominalSetting>().IsLegsBendComplite())
+                {
+                    Debug.Log("слот под Элемент с ножками");
+                    SetSlotComponentWithLegs();
+                }
+                else
+                {
+                    logMessageSpawn.GetTextMessageInLog(false, "Необходимо выполнить формовку выводов.");
+                    Debug.Log("Необходимо выполнить формовку выводов");
+                }
+
             }
             else
             {
-                Debug.Log("Необходимо выполнить формовку выводов");
+                Debug.Log("слот под Элемент без ножек");
+                SetSlotComponentSMD();
             }
-            
         }
         else
         {
-            Debug.Log("слот под Элемент без ножек");
-            SetSlotComponentSMD();
+            logMessageSpawn.GetTextMessageInLog(false, "Посадочное место занято.");
+            Debug.Log("Посадочное место занято.");
         }
+        
         
     }
     public void SlotRemove()

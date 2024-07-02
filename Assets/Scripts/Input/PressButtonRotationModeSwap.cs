@@ -9,7 +9,7 @@ public class PressButtonRotationModeSwap : MonoBehaviour
     [SerializeField] DragAndDrop dragAndDrop;
     [SerializeField] DragAndRotation dragAndRotation;
 
-    private GameObject draggedObject;
+    [SerializeField] private GameObject draggedObject;
 
     private void OnEnable()
     {

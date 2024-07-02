@@ -34,7 +34,7 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
         isOpen = true;
         draggedObject = selectObject;
         rectTransform.position = Mouse.current.position.ReadValue();
-        CheckTypeInterectable(typeInterectable);
+        //CheckTypeInterectable(typeInterectable);
         gameObject.SetActive(true);
     }
 
@@ -103,11 +103,18 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
     {
         draggedObject.TryGetComponent<IDrag>(out var drag);
 
+        if(dragAndRotation.enabled)
+        {
+            dragAndRotation.enabled = false;
+            dragAndDrop.enabled = true;
+        }
+
         if(drag.isFreeze)
         {
             Button freezeBt = buttonsMenuList.Find(s => s.name == freezeBtName);
             freezeBt.transform.GetChild(1).GetComponent<TMP_Text>().text = "Зафиксировать";
             drag.onFreeze(false);
+            quickOutlineDetect.DetectionDisable();
         }
         else
         {
@@ -115,9 +122,10 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             freezeBt.transform.GetChild(1).GetComponent<TMP_Text>().text = "Разблокирвать";
             drag.onFreeze(true);
             dragAndDrop.ClearHand();
+            quickOutlineDetect.DetectionEnable();
         }
         ClosePopupMenu();
-        quickOutlineDetect.DetectionEnable();
+
     }
     public void ClosePopupMenu()
     {
@@ -165,6 +173,6 @@ public class PopupMenuCustom : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
             freezeBt.transform.GetChild(1).GetComponent<TMP_Text>().text = "Разблокирвать";
             drag.onFreeze(true);
         }
-        quickOutlineDetect.DetectionEnable();
+        //quickOutlineDetect.DetectionEnable();
     }
 }

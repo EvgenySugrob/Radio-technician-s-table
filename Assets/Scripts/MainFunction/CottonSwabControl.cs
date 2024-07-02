@@ -38,14 +38,15 @@ public class CottonSwabControl : MonoBehaviour
     public void StartFluxing()
     {
         popupMenuCustom.ClosePopupMenu();
-        foreach (GameObject go in triggerZoneList) 
+        foreach (GameObject go in triggerZoneList)
         {
             go.GetComponent<CottonSwabTrigerZone>().DisableStartBt();
             go.SetActive(false);
+            go.GetComponent<CottonSwabTrigerZone>().DisableTriggerOutline();
         }
         flux.StartFlux(cottonSwabSpawn.ReturnCurrenSwab().GetComponent<CottonSwabControl>());
     }
-
+    
     public void EndFluxing()
     {
         isFluxed = true;

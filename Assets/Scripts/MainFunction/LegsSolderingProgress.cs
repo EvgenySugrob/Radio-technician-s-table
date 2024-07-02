@@ -11,6 +11,9 @@ public class LegsSolderingProgress : MonoBehaviour
     [SerializeField] bool isFluxiLegs;
     [SerializeField] CheckSolderOnLegsElement checkSolderOnLegsElement;
     [SerializeField] LegsSolderingProgress neighboringLeg;
+    [SerializeField] float badTimer;
+    [SerializeField] float badHoldDuration;
+    [SerializeField] float badAmountProgress;
 
     [Header("Fluxing legs for remove")]
     [SerializeField] float fluxingDuration = 1.5f;
@@ -44,6 +47,7 @@ public class LegsSolderingProgress : MonoBehaviour
     {
         finalProgress= duration;
         unsolderingDuration = finalProgress;
+        badHoldDuration= finalProgress;
     }
 
     public float SolderingLegsElement()
@@ -59,6 +63,17 @@ public class LegsSolderingProgress : MonoBehaviour
             checkSolderOnLegsElement.CheckLegsSoldering();
         }
         return amountForBar;
+    }
+    public float BadSolderingLegsElement()
+    {
+        badTimer += Time.deltaTime;
+        badAmountProgress = badTimer / badHoldDuration;
+
+        return badAmountProgress;
+    }
+    public float ReturnBadTimer()
+    {
+        return badTimer;
     }
 
     public float UnsolderingLegs()

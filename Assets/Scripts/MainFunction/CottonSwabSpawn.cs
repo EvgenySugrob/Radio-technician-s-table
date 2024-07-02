@@ -7,6 +7,7 @@ public class CottonSwabSpawn : MonoBehaviour
     [Header("DragAndDrop and Player")]
     [SerializeField] DragAndDrop dragAndDrop;
     [SerializeField] Transform spawnPoint;
+    [SerializeField] PressButtonRotationModeSwap pressButtonRotationModeSwap;
     private float distanceToPlayer = 0.28f;
 
     [Header("SpawnSwab")]
@@ -28,6 +29,7 @@ public class CottonSwabSpawn : MonoBehaviour
             currentSwab.GetComponent<CottonSwabControl>().SpawnEnableTriggerZone();
             dragAndDrop.SetDraggedObject(swab);
             dragAndDrop.SetCustomCurrentDistanceToObject(distanceToPlayer);
+            pressButtonRotationModeSwap.SetDraggedObject(swab);
         }
         else
         {
@@ -45,5 +47,9 @@ public class CottonSwabSpawn : MonoBehaviour
     public GameObject ReturnCurrenSwab()
     {
         return currentSwab;
+    }
+    public void StartFluxing()
+    {
+        currentSwab.GetComponent<CottonSwabControl>().StartFluxing();
     }
 }

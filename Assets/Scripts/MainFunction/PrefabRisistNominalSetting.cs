@@ -364,4 +364,8 @@ public class PrefabRisistNominalSetting : MonoBehaviour
 
         return isComplite;
     }
+    public bool ReturnIsSolderOnSlot()
+    {
+        return isSolderOnSLot;
+    }
 }

@@ -179,6 +179,7 @@ public class DragAndDrop : MonoBehaviour
                 if(hit.collider.GetComponent<CottonSwabSpawn>()!=null && draggedObject == null)
                 {
                     hit.collider.GetComponent<CottonSwabSpawn>().SpawnCottonSwab();
+                    quickOutlineDetect.DetectionDisable();
                 }
             }
         }

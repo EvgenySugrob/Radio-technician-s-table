@@ -34,6 +34,8 @@ public class SlotInfo : MonoBehaviour
     [SerializeField] List<SlotInfo> adjacentSlotsList;
     private TypeRadioElement typeElement;
 
+    [SerializeField] List<string> contextSlotNameList;
+
 
     private void Awake()
     {
@@ -41,6 +43,20 @@ public class SlotInfo : MonoBehaviour
         resistTransform = transform.GetChild(0).transform;
         capasitorTransform = transform.GetChild(1).transform;
         boardParent = transform.parent.parent;
+    }
+    public bool TrueContextSlotName(GameObject radioElement)
+    {
+        bool isTrue =false;
+
+        foreach (string contexName in contextSlotNameList)
+        {
+            if (contexName == radioElement.GetComponent<PrefabRisistNominalSetting>().ReturnContextFilmResistName())
+            {
+                isTrue = true;
+            }
+        }
+
+        return isTrue;
     }
 
     public Transform GetRadioElementTypePosition(TypeRadioElement typeRadioElement, GameObject radioelement)

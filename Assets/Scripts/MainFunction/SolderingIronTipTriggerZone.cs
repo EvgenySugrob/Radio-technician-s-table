@@ -22,10 +22,18 @@ public class SolderingIronTipTriggerZone : MonoBehaviour
         if (other.tag == rosinTag)
         {
             solderInteract.RosinCheck(true);
+            if (other.GetComponent<QuickOutlineController>())
+            {
+                other.GetComponent<QuickOutlineController>().EnableOutline();
+            }
         }
         else if (other.tag == solderTag)
         {
             solderInteract.IronTinningCheck(true,other.transform);
+            if (other.GetComponent<QuickOutlineController>())
+            {
+                other.GetComponent<QuickOutlineController>().EnableOutline();
+            }
         }
     }
 
@@ -47,10 +55,20 @@ public class SolderingIronTipTriggerZone : MonoBehaviour
         if (other.tag == rosinTag)
         {
             solderInteract.RosinCheck(false);
+            if (other.GetComponent<QuickOutlineController>())
+            {
+                other.GetComponent<QuickOutlineController>().DisableOutline();
+            }
         }
         else if (other.tag == solderTag)
         {
             solderInteract.IronTinningCheck(false,other.transform);
+            if (other.GetComponent<QuickOutlineController>())
+            {
+                other.GetComponent<QuickOutlineController>().DisableOutline();
+            }
         }
+
+        
     }
 }

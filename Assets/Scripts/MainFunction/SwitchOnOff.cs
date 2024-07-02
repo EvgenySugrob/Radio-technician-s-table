@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class SwitchOnOff : MonoBehaviour
@@ -11,7 +12,10 @@ public class SwitchOnOff : MonoBehaviour
     [SerializeField] bool isMainSwitch;
     [SerializeField] MeshRenderer solderPowerOnIndicator;
     private Vector3 startAngle;
-    private Vector3 targetAngle = new Vector3(0,0,0);
+    private Vector3 targetAngle = new Vector3(0, 0, 0);
+
+    [Header("LogMessage")]
+    [SerializeField] LogMessageSpawn logMessageSpawn;
 
     private bool powerOn;
 
@@ -71,6 +75,7 @@ public class SwitchOnOff : MonoBehaviour
             }
             else
             {
+                logMessageSpawn.GetTextMessageInLog(false, "Станция не включена в розетку.");
                 Debug.Log("Не включен");
             }
         }

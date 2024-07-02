@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ public class SolderInteract : MonoBehaviour
     [SerializeField] bool isIronTin;
     [SerializeField] bool isIronTinnig;
     [SerializeField] bool isRosinCheck;
+    [SerializeField] bool isBadReady;
 
     [Header("Soldering ready for work")]
     [SerializeField] bool isReady;
@@ -63,6 +65,9 @@ public class SolderInteract : MonoBehaviour
     [SerializeField] SolderSlotsDetect solderSlotsDetect;
     [SerializeField] Transform radioelementSlot;
 
+    [Header("LogMessage")]
+    [SerializeField] LogMessageSpawn logMessageSpawn;
+
     private Rigidbody solderRb;
 
     private void Start()
@@ -106,6 +111,7 @@ public class SolderInteract : MonoBehaviour
         }
         else
         {
+            logMessageSpawn.GetTextMessageInLog(true, "Станция не включена.");
             Debug.Log("Станция не включена");
         }
     }
@@ -205,6 +211,7 @@ public class SolderInteract : MonoBehaviour
                 thereIsSolder = false;
                 isIronTin= false;
                 timer = 0;
+                isBadReady = true;
             }
 
         }
@@ -212,23 +219,27 @@ public class SolderInteract : MonoBehaviour
     }
     private void BadHoldSolder()
     {
-        if(isReady && isSolderingPoint && radioelementSlot.GetComponent<LegsSolderingProgress>().ReturnTweezersGrab())
+        if(isReady && isSolderingPoint && isBadReady)
         {
             if(holdTimer>=holdDuration)
             {
-                badTimer += Time.deltaTime;
-                badProgress.fillAmount = badTimer / badHoldDuration;
+                badTimer = radioelementSlot.GetComponent<LegsSolderingProgress>().ReturnBadTimer();
+                //badTimer += Time.deltaTime;
+                badProgress.fillAmount = radioelementSlot.GetComponent<LegsSolderingProgress>().BadSolderingLegsElement();
+                //badProgress.fillAmount = badTimer / badHoldDuration;
 
                 if (badTimer >= badHoldDuration)
                 {
+                    logMessageSpawn.GetTextMessageInLog(false, "Вывод компонента перегрет");
                     Debug.Log("Перегрел");
+                    isBadReady= false;
                 }
             }
         }
         else
         {
             badTimer = 0;
-            badProgress.fillAmount = 0;
+            //badProgress.fillAmount = 0;
         }
     }
     private void TakingSolder()
@@ -270,6 +281,11 @@ public class SolderInteract : MonoBehaviour
                 LegsSolderingProgress legs = radioelementSlot.GetComponent<LegsSolderingProgress>();
                 if (legs.GetStatusLegs() && legs.GetFluxingLeg())
                 {
+
+
+                    badProgress.fillAmount = 0;
+
+
                     ProgressBarCorrectUIPosition();
                     progressBarSolder.SetActive(true);
 

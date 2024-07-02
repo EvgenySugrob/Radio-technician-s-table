@@ -21,6 +21,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
     [SerializeField] Tweezers tweezers;
     [SerializeField] List<GameObject> boardSlots;
     private GameObject objectInHandNow;
+    private Vector3 eulerCameraRotation = new Vector3(90,0,0);
 
     [Header("UI")]
     [SerializeField] GameObject buttonBack;
@@ -30,6 +31,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
     public void StartOrtoView()
     {
         player.GetComponent<PlayerController>().enabled = false;
+        Debug.Log(player.GetComponent<PlayerController>().enabled);
         objectInHandNow = dragAndDrop.GetDraggedObject();
 
         if(objectInHandNow.GetComponent<Tweezers>())
@@ -66,17 +68,20 @@ public class OrtoViewCameraPosition : MonoBehaviour
         if(Vector3.Distance(player.position,boardOrtoViewPosition.position) < Vector3.Distance(player.position, boardOrtoviewPositionSwap.position))
         {
             player.position = boardOrtoViewPosition.position;
-            playerCamera.rotation = boardOrtoViewPosition.rotation;
+            //playerCamera.rotation = boardOrtoViewPosition.rotation;
+            playerCamera.eulerAngles = eulerCameraRotation;
         }
         else
         {
             player.position = boardOrtoviewPositionSwap.position;
-            playerCamera.rotation = boardOrtoviewPositionSwap.rotation;
+            playerCamera.eulerAngles = eulerCameraRotation;
+            //playerCamera.rotation = boardOrtoviewPositionSwap.rotation;
         }
 
         buttonBack.SetActive(true);
 
         player.GetComponent<PlayerController>().enabled = true;
+        Debug.Log(player.GetComponent<PlayerController>().enabled);
         //isMove = true;
     }
     private void SiderCuttersInHand()
@@ -93,6 +98,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
     {
         tweezers = dragAndDrop.GetDraggedObject().GetComponent<Tweezers>();
         tweezers.ActiveOrtoViewBt(false);
+        tweezers.PopupMenuOrtoviewButtons(true);
     }
     private void SwabInHand()
     {
@@ -114,6 +120,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
     {
         dragAndDrop.RecoveryCurrentDistance();
         player.GetComponent<PlayerController>().enabled = false;
+        Debug.Log(player.GetComponent<PlayerController>().enabled);
 
         if (objectInHandNow != null)
         {
@@ -129,6 +136,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
             {
                 //objectInHandNow.GetComponent<Tweezers>().TransparentMaterial(false);
                 objectInHandNow.GetComponent<Tweezers>().RemoveParent();
+                objectInHandNow.GetComponent<Tweezers>().PopupMenuOrtoviewButtons(false);
             }
             playerCamera.GetComponent<Camera>().orthographic = false;
         }
@@ -149,5 +157,6 @@ public class OrtoViewCameraPosition : MonoBehaviour
         player.position = startPosition;
         playerCamera.rotation = startRotation;
         player.GetComponent<PlayerController>().enabled = true;
+        Debug.Log(player.GetComponent<PlayerController>().enabled);
     }
 }
