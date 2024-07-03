@@ -185,6 +185,13 @@ public class DragAndDrop : MonoBehaviour
                     hit.collider.GetComponent<CottonSwabSpawn>().SpawnCottonSwab();
                     quickOutlineDetect.DetectionDisable();
                 }
+
+                if(hit.collider.GetComponent<BathDetection>() != null && draggedObject == null
+                    && solderStationDetect.detect == false && playerController.IsActiveOrtoView() == false)
+                {
+                    hit.collider.GetComponent<BathDetection>().StartMoveToStation();
+                }
+                //Добавить скрипт на забратие платы
             }
         }
     }

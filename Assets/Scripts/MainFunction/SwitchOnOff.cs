@@ -6,11 +6,16 @@ using UnityEngine;
 public class SwitchOnOff : MonoBehaviour
 {
     [SerializeField] SolderStation solderStation;
+    [SerializeField] UltrasonicBath ultrasonicBath;
     [SerializeField] Transform onOffButton;
 
     [Header("Optional")]
     [SerializeField] bool isMainSwitch;
+    [SerializeField] bool isSolderStationSwitch;
+    [SerializeField] bool isUltrasonicBath;
     [SerializeField] MeshRenderer solderPowerOnIndicator;
+    [SerializeField] MeshRenderer ultrasonicBathPowerIndicator;
+    [SerializeField] GameObject uiBath;
     private Vector3 startAngle;
     private Vector3 targetAngle = new Vector3(0, 0, 0);
 
@@ -30,9 +35,13 @@ public class SwitchOnOff : MonoBehaviour
         {
             EnableMainSwitch();
         }
-        else
+        else if (isSolderStationSwitch) 
         {
             EnableStationSwitch();
+        }
+        else if(isUltrasonicBath)
+        {
+            EnableUltrasonicBath();
         }
     }
 
@@ -43,6 +52,7 @@ public class SwitchOnOff : MonoBehaviour
             powerOn = false;
             onOffButton.localEulerAngles = startAngle;
             solderStation.powerIsEnable = powerOn;
+            ultrasonicBath.ultrasonicBathEnable = powerOn;
             DisableStationPower();
         }
         else
@@ -51,6 +61,7 @@ public class SwitchOnOff : MonoBehaviour
             EnebleStationPower();
             onOffButton.localEulerAngles = targetAngle;
             solderStation.powerIsEnable =powerOn;
+            ultrasonicBath.ultrasonicBathEnable=powerOn;
         }
     }
     private void EnableStationSwitch()
@@ -81,9 +92,41 @@ public class SwitchOnOff : MonoBehaviour
         }
     }
 
+    public void EnableUltrasonicBath()
+    {
+        if (powerOn)
+        {
+            powerOn = false;
+            onOffButton.localEulerAngles = startAngle;
+            ultrasonicBath.ultrasonicBathEnable= false;
+
+            uiBath.SetActive(false);
+            ultrasonicBathPowerIndicator.material.DisableKeyword("_EMISSION");
+        }
+        else
+        {
+            powerOn= true;
+            onOffButton.localEulerAngles= targetAngle;
+            ultrasonicBath.ultrasonicBathEnable = true;
+
+            if (ultrasonicBath.plugInSocket && ultrasonicBath.ultrasonicBathEnable)
+            {
+                ultrasonicBathPowerIndicator.material.EnableKeyword("_EMISSION");
+                uiBath.SetActive(true);
+            }
+            else
+            {
+                logMessageSpawn.GetTextMessageInLog(false, "УЗ-ванна не включена в розетку.");
+                Debug.Log("Не включен");
+            }
+        }
+    }
+
     public void DisableStationPower()
     {
+        uiBath.SetActive(false);
         solderPowerOnIndicator.material.DisableKeyword("_EMISSION");
+        ultrasonicBathPowerIndicator.material.DisableKeyword("_EMISSION");
     }
     public void EnebleStationPower()
     {
@@ -91,5 +134,10 @@ public class SwitchOnOff : MonoBehaviour
         {
             solderPowerOnIndicator.material.EnableKeyword("_EMISSION");
         }
+        if(ultrasonicBath.ultrasonicBathEnable)
+        {
+            ultrasonicBathPowerIndicator.material.EnableKeyword("_EMISSION");
+        }
+            
     }
 }

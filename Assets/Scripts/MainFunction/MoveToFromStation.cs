@@ -88,7 +88,7 @@ public class MoveToFromStation : MonoBehaviour
         }
         else
         {
-            switchOnOffCollider.enabled = true;
+            //switchOnOffCollider.enabled = true;
             temperatureRegulatorCollider.enabled = true;
             isMove = false;
             isStationPosition = false;
@@ -122,6 +122,7 @@ public class MoveToFromStation : MonoBehaviour
     public void PlayerFromStation()
     {
         isMove = true;
+        switchOnOffCollider.enabled = false;
         backToMainViewBt.SetActive(false);
     }
 }
