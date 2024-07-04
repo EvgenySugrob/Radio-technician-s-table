@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
@@ -47,7 +48,7 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] Transform regulator;
     TemperatureRegulatorSetting settingRegulator;
     [SerializeField] private bool regulatorCheck;
-    [SerializeField] private int curretntIndexTemerature = 0;
+    [SerializeField] private int curretntIndexTemperature = 0;
     private int stepIndexTemperature = 1;
 
     [SerializeField] PlayerController playerController;
@@ -57,6 +58,11 @@ public class DragAndDrop : MonoBehaviour
 
     [Header("OutlineDetect")]
     [SerializeField] QuickOutlineDetect quickOutlineDetect;
+
+    [SerializeField] LogMessageSpawn logMessageSpawn;
+
+    private bool isStaticWristStrap;
+    private bool pointOnUI;
 
     private void Awake()
     {
@@ -88,7 +94,7 @@ public class DragAndDrop : MonoBehaviour
 
     private void MouseRightInput(InputAction.CallbackContext obj)
     {
-        if (draggedObject != null && checkOpenUIComponent.NonActiveUIComponent() && draggedObject.GetComponent<NoPopupMenu>() == null)
+        if (draggedObject != null && checkOpenUIComponent.NonActiveUIComponent() && draggedObject.GetComponent<NoPopupMenu>() == null && pointOnUI ==false)
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
@@ -108,94 +114,109 @@ public class DragAndDrop : MonoBehaviour
 
     private void MousePressed(InputAction.CallbackContext obj)
     {
-        if (NonOpenPopupMenu() && checkOpenUIComponent.NonActiveUIComponent() && isHoldMouse == false)
+
+        if (NonOpenPopupMenu() && checkOpenUIComponent.NonActiveUIComponent() && isHoldMouse == false && pointOnUI ==false)
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 100f, layerMask))
             {
-
-                if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null && solderStationDetect.detect == false
-                    /*&& playerController.IsActiveOrtoView() == false*/)
+                if (hit.collider.tag == "StaticWristStrap")
                 {
-                    draggedObject = hit.collider.gameObject;
-                    if (draggedObject.GetComponent<SolderInteract>() != null)
+                    isStaticWristStrap = true;
+                    hit.collider.gameObject.SetActive(false);
+                }
+
+                if (isStaticWristStrap)
+                {
+                    if (hit.collider.GetComponent<IDrag>() != null && draggedObject == null && solderStationDetect.detect == false
+                   /*&& playerController.IsActiveOrtoView() == false*/)
                     {
-                        isHoldMouse = true;
-                        draggedObject.GetComponent<SolderInteract>().EnableSolderDetectionZone();
+                        draggedObject = hit.collider.gameObject;
+                        if (draggedObject.GetComponent<SolderInteract>() != null)
+                        {
+                            isHoldMouse = true;
+                            draggedObject.GetComponent<SolderInteract>().EnableSolderDetectionZone();
+                        }
+
+                        dragAndRotation.SetObjectRotation(draggedObject);
+                        pressButtonRotationMode.SetDraggedObject(draggedObject);
+                        isDrag = true;
+                        hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
+
+                        quickOutlineDetect.DetectionDisable();
+
                     }
-                    
-                    dragAndRotation.SetObjectRotation(draggedObject);
-                    pressButtonRotationMode.SetDraggedObject(draggedObject);
-                    isDrag = true;
-                    hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
+                    else if (draggedObject != null && playerController.IsActiveOrtoView() == false)
+                    {
+                        draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
+                        iDragComponent?.onEndDrag();
+                        iDragComponent.isMovebale = false;
+                        draggedObject = null;
+                        dragAndRotation.SetObjectRotation(draggedObject);
+                        pressButtonRotationMode.SetDraggedObject(draggedObject);
+                        isDrag = false;
 
-                    quickOutlineDetect.DetectionDisable();
+                        quickOutlineDetect.DetectionEnable();
+                        //hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
+                    }
 
+                    if (hit.collider.GetComponent<SolderStationDetect>() != null && draggedObject == null
+                        && solderStationDetect.detect == false && playerController.IsActiveOrtoView() == false)
+                    {
+                        hit.collider.GetComponent<SolderStationDetect>().StartMoveToStation();
+                    }
+
+                    if (hit.collider.GetComponent<PlugActive>() != null && draggedObject == null)
+                    {
+                        hit.collider.GetComponent<PlugActive>().PlugInSocket();
+                    }
+
+                    if (hit.collider.GetComponent<SwitchOnOff>() != null && draggedObject == null)
+                    {
+                        hit.collider.GetComponent<SwitchOnOff>().ButtonTurnOnOff();
+                    }
+                    if (hit.collider.GetComponent<SonicPlugInSocket>() != null && draggedObject == null)
+                    {
+                        hit.collider.GetComponent<SonicPlugInSocket>().PlugInSocket();
+                    }
+
+                    if (hit.collider.GetComponent<TemperatureRegulatorSetting>() != null && draggedObject == null
+                        && solderStationDetect.detect == true)
+                    {
+                        //    regulator = hit.collider.GetComponent<TemperatureRegulatorSetting>().transform;
+
+                        //    pressPoint = Input.mousePosition;
+                        //    startRotation = regulator.transform.localRotation;
+                        //    startAxisRotationX = endAxisRotationX;
+
+                        regulatorCheck = true;
+                    }
+
+                    if (hit.collider.GetComponent<CottonSwabSpawn>() != null && draggedObject == null)
+                    {
+                        hit.collider.GetComponent<CottonSwabSpawn>().SpawnCottonSwab();
+                        quickOutlineDetect.DetectionDisable();
+                    }
+
+                    if (hit.collider.GetComponent<BathDetection>() != null && draggedObject == null
+                        && solderStationDetect.detect == false && playerController.IsActiveOrtoView() == false)
+                    {
+                        hit.collider.GetComponent<BathDetection>().StartMoveToStation();
+                    }
+                    if (hit.collider.GetComponent<RemoveBoardInBath>() != null && solderStationDetect.detect == false && playerController.IsActiveOrtoView() == false)
+                    {
+                        hit.collider.GetComponent<RemoveBoardInBath>().OpenMenu();
+                    }
                 }
-                else if (draggedObject != null && playerController.IsActiveOrtoView() == false)
+                else
                 {
-                    draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
-                    iDragComponent?.onEndDrag();
-                    iDragComponent.isMovebale = false;
-                    draggedObject = null;
-                    dragAndRotation.SetObjectRotation(draggedObject);
-                    pressButtonRotationMode.SetDraggedObject(draggedObject);
-                    isDrag = false;
-
-                    quickOutlineDetect.DetectionEnable();
-                    //hit.collider.GetComponent<IDrag>().isMovebale = isDrag;
-                }
-
-                if (hit.collider.GetComponent<SolderStationDetect>() != null && draggedObject == null 
-                    && solderStationDetect.detect == false && playerController.IsActiveOrtoView() == false)
-                {
-                    hit.collider.GetComponent<SolderStationDetect>().StartMoveToStation();
-                }
-
-                if (hit.collider.GetComponent<PlugActive>() != null && draggedObject == null)
-                {
-                    hit.collider.GetComponent<PlugActive>().PlugInSocket();
-                }
-
-                if (hit.collider.GetComponent<SwitchOnOff>() != null && draggedObject == null)
-                {
-                    hit.collider.GetComponent<SwitchOnOff>().ButtonTurnOnOff();
-                }
-                if(hit.collider.GetComponent<SonicPlugInSocket>()!= null && draggedObject == null)
-                {
-                    hit.collider.GetComponent<SonicPlugInSocket>().PlugInSocket();
-                }
-
-                if (hit.collider.GetComponent<TemperatureRegulatorSetting>() != null && draggedObject == null 
-                    && solderStationDetect.detect == true)
-                {
-                    //    regulator = hit.collider.GetComponent<TemperatureRegulatorSetting>().transform;
-
-                    //    pressPoint = Input.mousePosition;
-                    //    startRotation = regulator.transform.localRotation;
-                    //    startAxisRotationX = endAxisRotationX;
-
-                    regulatorCheck = true;
-                }
-
-                if(hit.collider.GetComponent<CottonSwabSpawn>()!=null && draggedObject == null)
-                {
-                    hit.collider.GetComponent<CottonSwabSpawn>().SpawnCottonSwab();
-                    quickOutlineDetect.DetectionDisable();
-                }
-
-                if(hit.collider.GetComponent<BathDetection>() != null && draggedObject == null
-                    && solderStationDetect.detect == false && playerController.IsActiveOrtoView() == false)
-                {
-                    hit.collider.GetComponent<BathDetection>().StartMoveToStation();
-                }
-                //Добавить скрипт на забратие платы
+                    logMessageSpawn.GetTextMessageInLog(true, "Не надет антистатический браслет");
+                }   
             }
         }
     }
-
 
     private bool NonOpenPopupMenu()
     {
@@ -300,15 +321,15 @@ public class DragAndDrop : MonoBehaviour
 
     private void RotationRegulator()
     {
-        if (Input.mouseScrollDelta.y > 0 && curretntIndexTemerature < 11)
+        if (Input.mouseScrollDelta.y > 0 && curretntIndexTemperature < 11)
         {
-            curretntIndexTemerature += stepIndexTemperature;
-            settingRegulator.SetRegulatorTemperature(curretntIndexTemerature);
+            curretntIndexTemperature += stepIndexTemperature;
+            settingRegulator.SetRegulatorTemperature(curretntIndexTemperature);
         }
-        if (Input.mouseScrollDelta.y < 0 && curretntIndexTemerature > 0)
+        if (Input.mouseScrollDelta.y < 0 && curretntIndexTemperature > 0)
         {
-            curretntIndexTemerature -= stepIndexTemperature;
-            settingRegulator.SetRegulatorTemperature(curretntIndexTemerature);
+            curretntIndexTemperature -= stepIndexTemperature;
+            settingRegulator.SetRegulatorTemperature(curretntIndexTemperature);
         }
     }
 
@@ -384,7 +405,7 @@ public class DragAndDrop : MonoBehaviour
 
     public void SpaceRotate()
     {
-        if (draggedObject != null && checkOpenUIComponent.NonActiveUIComponent() && draggedObject.GetComponent<NoPopupMenu>() == null)
+        if (draggedObject != null && checkOpenUIComponent.NonActiveUIComponent() && draggedObject.GetComponent<NoPopupMenu>() == null && pointOnUI == false)
         {
             draggedObject.TryGetComponent<PopupMenuObjectType>(out var popupMenu);
             popupMenu.RotateObjectSpacePress();
@@ -393,5 +414,10 @@ public class DragAndDrop : MonoBehaviour
     public void RecoveryCurrentDistance()
     {
         //currentDistanceToObject = currentDistanceBeforeOrtoview;
+    }
+
+    public void PointerState(bool state)
+    {
+        pointOnUI = state;
     }
 }

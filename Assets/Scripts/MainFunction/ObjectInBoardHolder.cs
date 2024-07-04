@@ -6,6 +6,7 @@ public class ObjectInBoardHolder : MonoBehaviour
 {
     [SerializeField] Transform holderPoint;
     [SerializeField] BoardFixInHolder boardFixInHolder;
+    [SerializeField] GameObject removeBoardInHolderBt;
 
     [SerializeField] DragAndDrop dragAndDrop;
     private Rigidbody rb;
@@ -27,6 +28,8 @@ public class ObjectInBoardHolder : MonoBehaviour
         transform.position = holderPoint.position;
         transform.rotation = holderPoint.rotation;
         transform.parent = holderPoint.parent;
+
+        removeBoardInHolderBt.SetActive(true);
 
         boardFixInHolder.DisableTriggerZone(false);
     }

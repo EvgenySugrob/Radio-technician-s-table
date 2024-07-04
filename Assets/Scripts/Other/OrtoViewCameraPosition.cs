@@ -9,10 +9,12 @@ public class OrtoViewCameraPosition : MonoBehaviour
     [SerializeField] Transform player;
     [SerializeField] Transform playerCamera;
     [SerializeField] CinemachineVirtualCamera virtualCamera;
+    [SerializeField] Transform board;
     [SerializeField] DragAndDrop dragAndDrop;
     [SerializeField] float speed = 3f;
-    [SerializeField]Vector3 startPosition;
-    [SerializeField]Quaternion startRotation;
+    [SerializeField] Vector3 startPosition;
+    [SerializeField] Quaternion startRotation;
+    [SerializeField] Quaternion playerStartRotation;
 
     [Header("BoardPoint")]
     [SerializeField] Transform boardOrtoViewPosition;
@@ -30,6 +32,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
     public void StartOrtoView()
     {
+        virtualCamera.enabled = false;
         player.GetComponent<PlayerController>().enabled = false;
         Debug.Log(player.GetComponent<PlayerController>().enabled);
         objectInHandNow = dragAndDrop.GetDraggedObject();
@@ -57,17 +60,18 @@ public class OrtoViewCameraPosition : MonoBehaviour
             SwabInHand();
         }
         bigTweezer.TransparentMaterial(true);
-        virtualCamera.enabled = false;
+        
         startPosition = player.position;
         startRotation = playerCamera.rotation;
+        playerStartRotation = player.rotation;
 
-        player.GetComponent<PlayerController>().ActiveOrtoView(true);
-        playerCamera.GetComponent<Camera>().orthographic = true;
+        
         dragAndDrop.OrtoViewParam();
 
         if(Vector3.Distance(player.position,boardOrtoViewPosition.position) < Vector3.Distance(player.position, boardOrtoviewPositionSwap.position))
         {
             player.position = boardOrtoViewPosition.position;
+            //player.eulerAngles = new Vector3(player.eulerAngles.x, board.eulerAngles.y, player.eulerAngles.z);
             //playerCamera.rotation = boardOrtoViewPosition.rotation;
             playerCamera.eulerAngles = eulerCameraRotation;
         }
@@ -77,7 +81,8 @@ public class OrtoViewCameraPosition : MonoBehaviour
             playerCamera.eulerAngles = eulerCameraRotation;
             //playerCamera.rotation = boardOrtoviewPositionSwap.rotation;
         }
-
+        player.GetComponent<PlayerController>().ActiveOrtoView(true);
+        playerCamera.GetComponent<Camera>().orthographic = true;
         buttonBack.SetActive(true);
 
         player.GetComponent<PlayerController>().enabled = true;
@@ -150,13 +155,15 @@ public class OrtoViewCameraPosition : MonoBehaviour
             slotsGroup.SetActive(false);
         }
         triggerZonePopupBt.enabled = true;
-        virtualCamera.enabled = true;
+        
         tweezers = null;
         objectInHandNow = null;
 
         player.position = startPosition;
         playerCamera.rotation = startRotation;
+        //player.rotation = startRotation;
         player.GetComponent<PlayerController>().enabled = true;
+        virtualCamera.enabled = true;
         Debug.Log(player.GetComponent<PlayerController>().enabled);
     }
 }

@@ -27,7 +27,7 @@ public class UltrasonicBath : MonoBehaviour
     [SerializeField] float timeStep = 1;
     private float minTime = 1;
     private float maxTime = 99;
-    private float timeBeforStart;
+    private float timeBeforStart = 10;
 
     [Header("TemperatureTime")]
     [SerializeField] TMP_Text temperatureText;

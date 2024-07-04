@@ -19,6 +19,7 @@ TagManager:
   - Flux
   - SlideCuttersLeg
   - SideCutters
+  - StaticWristStrap
   layers:
   - Default
   - TransparentFX

@@ -26,7 +26,6 @@ public class ObjectInBath : MonoBehaviour
 
         transform.position = bathHolderPoint.position;
         transform.rotation = bathHolderPoint.rotation;
-        transform.parent = bathHolderPoint.parent;
 
         bathBoardFixInHolder.DisableTriggerZone(false);
     }

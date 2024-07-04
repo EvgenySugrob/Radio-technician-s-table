@@ -1,6 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMoveToBath : MonoBehaviour
@@ -122,6 +123,11 @@ public class PlayerMoveToBath : MonoBehaviour
 
     public void PlayerToStation()
     {
+        foreach(GameObject item in hideObject)
+        {
+            item.SetActive(false);
+        }
+
         bathDetect.detect = true;
         bathCollider.enabled = false;
         positionBeforeMoving = player.position;
@@ -143,6 +149,10 @@ public class PlayerMoveToBath : MonoBehaviour
                 enabledButtonsControl.Add(item);
                 item.SetActive(false);
             }
+        }
+        foreach (GameObject item in hideObject)
+        {
+            item.SetActive(true);
         }
 
         isMove = true;

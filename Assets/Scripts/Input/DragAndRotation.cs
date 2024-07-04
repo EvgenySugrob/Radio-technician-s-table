@@ -17,6 +17,7 @@ public class DragAndRotation : MonoBehaviour
     [SerializeField] private bool isInvert;
     [SerializeField] private GameObject draggedObject;
     private Vector2 rotation;
+    private bool pointOnUI;
 
     private void Awake()
     {
@@ -35,18 +36,9 @@ public class DragAndRotation : MonoBehaviour
         axis.performed += context => { rotation = context.ReadValue<Vector2>(); };
     }
 
-    private void SpacePress_performed(InputAction.CallbackContext obj)
-    {
-        if(draggedObject != null)
-        {
-            draggedObject.TryGetComponent<PopupMenuObjectType>(out var popupMenu);
-            popupMenu.RotateObjectSpacePress();
-        }
-    }
-
     private void MouseRightInput(InputAction.CallbackContext obj)
     {
-        if (draggedObject != null)
+        if (draggedObject != null && pointOnUI==false)
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
@@ -72,7 +64,7 @@ public class DragAndRotation : MonoBehaviour
 
     private void Update()
     {
-        if(isRotate)
+        if(isRotate && pointOnUI==false)
         {
             rotation *= speedRotation;
             draggedObject.transform.Rotate(Vector3.down, rotation.x,Space.World);
@@ -83,5 +75,10 @@ public class DragAndRotation : MonoBehaviour
     public void SetObjectRotation(GameObject gameObject)
     {
         draggedObject= gameObject;
+    }
+
+    public void PointerState(bool state)
+    {
+        pointOnUI = state;
     }
 }
