@@ -20,6 +20,7 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] private float minDist = 0.2f;
     [SerializeField] private float maxDist = 2f;
     [SerializeField] LayerMask layerMask;
+    [SerializeField] float offset;
 
     [Header("Rotation")]
     [SerializeField] private DragAndRotation dragAndRotation;
@@ -60,6 +61,8 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] QuickOutlineDetect quickOutlineDetect;
 
     [SerializeField] LogMessageSpawn logMessageSpawn;
+
+    [SerializeField] MultimeterMain multimeterMain;
 
     private bool isStaticWristStrap;
     private bool pointOnUI;
@@ -148,7 +151,7 @@ public class DragAndDrop : MonoBehaviour
                         quickOutlineDetect.DetectionDisable();
 
                     }
-                    else if (draggedObject != null && playerController.IsActiveOrtoView() == false)
+                    else if (draggedObject != null && playerController.IsActiveOrtoView() == false && multimeterMain.IsTypeSelect()==false)
                     {
                         draggedObject.TryGetComponent<IDrag>(out var iDragComponent);
                         iDragComponent?.onEndDrag();
@@ -235,11 +238,11 @@ public class DragAndDrop : MonoBehaviour
     {
         if (!isHoldingSolder)
         {
-            if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist && playerController.IsActiveOrtoView() == false)
+            if (Input.mouseScrollDelta.y > 0 && currentDistanceToObject < maxDist && playerController.IsActiveOrtoView() == false && multimeterMain.IsTypeSelect() == false)
             {
                 currentDistanceToObject += stepsDistance;
             }
-            if (Input.mouseScrollDelta.y < 0 && currentDistanceToObject > minDist && playerController.IsActiveOrtoView() == false)
+            if (Input.mouseScrollDelta.y < 0 && currentDistanceToObject > minDist && playerController.IsActiveOrtoView() == false && multimeterMain.IsTypeSelect() == false)
             {
                 currentDistanceToObject -= stepsDistance;
             }
@@ -392,6 +395,10 @@ public class DragAndDrop : MonoBehaviour
             currentDistanceToObject = 0.12f;
             draggedObject.transform.localEulerAngles = new Vector3(0,-90,0);
         }
+        else if(draggedObject.GetComponent<MultimeterMain>())
+        {
+            currentDistanceToObject = 0.12f;
+        }
     }
 
     public void TweezersSlotSet()
@@ -419,5 +426,10 @@ public class DragAndDrop : MonoBehaviour
     public void PointerState(bool state)
     {
         pointOnUI = state;
+    }
+
+    public void SetIsDragState(bool isActive)
+    {
+        isDrag= isActive;
     }
 }

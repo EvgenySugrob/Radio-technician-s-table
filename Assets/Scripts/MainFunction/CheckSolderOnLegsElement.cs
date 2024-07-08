@@ -7,6 +7,7 @@ public class CheckSolderOnLegsElement : MonoBehaviour
     [SerializeField] PrefabRisistNominalSetting prefabRisistNominalSetting;
     [SerializeField] List<LegsSolderingProgress> legsSolderingProgressesList;
     [SerializeField] List<LegPrepareToCut> legPrepareToCutList;
+    [SerializeField] bool isGoodComponent;
 
     private void Awake()
     {
@@ -34,6 +35,7 @@ public class CheckSolderOnLegsElement : MonoBehaviour
         if(countSolderingLegs == legsSolderingProgressesList.Count)
         {
             prefabRisistNominalSetting.FullSolderingElement(true);
+            isGoodComponent = true;
             foreach (LegPrepareToCut leg in legPrepareToCutList)
             {
                 leg.RedyToCat(true);
@@ -67,5 +69,10 @@ public class CheckSolderOnLegsElement : MonoBehaviour
         {
             leg.TweezersGrab(isGrab);
         }
+    }
+
+    public bool IsGoodComponent()
+    {
+        return isGoodComponent;
     }
 }

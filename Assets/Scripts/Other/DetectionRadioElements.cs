@@ -6,6 +6,7 @@ public class DetectionRadioElements : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.name);
         if (other.tag == "Tweezers")
         {
             Tweezers tweezers = other.GetComponent<Tweezers>();
@@ -22,6 +23,10 @@ public class DetectionRadioElements : MonoBehaviour
         else if(other.tag == "SwabGroup")
         {
             other.GetComponent<CottonSwabControl>().ActiveOrtoview(true);
+        }
+        else if(other.tag == "Multimeter")
+        {
+            other.GetComponent<MultimeterMain>().ActiveOrtoBt(true);
         }
     }
 
@@ -48,6 +53,10 @@ public class DetectionRadioElements : MonoBehaviour
         {
             other.GetComponent<SideCuttersMain>().ActiveOrtoviewBt(true);
         }
+        else if (other.tag == "Multimeter")
+        {
+            other.GetComponent<MultimeterMain>().ActiveOrtoBt(true);
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -69,6 +78,14 @@ public class DetectionRadioElements : MonoBehaviour
         else if (other.tag == "SwabGroup")
         {
             other.GetComponent<CottonSwabControl>().ActiveOrtoview(false);
+        }
+        else if (other.tag == "SideCutters")
+        {
+            other.GetComponent<SideCuttersMain>().ActiveOrtoviewBt(false);
+        }
+        else if (other.tag == "Multimeter")
+        {
+            other.GetComponent<MultimeterMain>().ActiveOrtoBt(false);
         }
     }
 }

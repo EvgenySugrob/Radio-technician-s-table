@@ -339,4 +339,9 @@ public class SlotInfo : MonoBehaviour
                 break;
         }
     }
+
+    public bool ReturnStateRadioComponent()
+    {
+        return radioelementInSlot.GetComponent<PrefabRisistNominalSetting>().CheckStateComponent();
+    }
 }

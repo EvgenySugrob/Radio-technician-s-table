@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class OrtoViewCameraPosition : MonoBehaviour
 {
+    public bool isOrtoViewActive { get; set; }
     [Header("Player")]
     [SerializeField] Transform player;
     [SerializeField] Transform playerCamera;
@@ -49,6 +50,10 @@ public class OrtoViewCameraPosition : MonoBehaviour
         {
             SiderCuttersInHand();
         }
+        if (objectInHandNow.GetComponent<MultimeterMain>())
+        {
+            MultimeterInHand();
+        }
 
         triggerZonePopupBt.enabled = false;
         foreach (GameObject slotsGroup in boardSlots)
@@ -87,7 +92,14 @@ public class OrtoViewCameraPosition : MonoBehaviour
 
         player.GetComponent<PlayerController>().enabled = true;
         Debug.Log(player.GetComponent<PlayerController>().enabled);
+        isOrtoViewActive= true;
         //isMove = true;
+    }
+
+    private void MultimeterInHand()
+    {
+        objectInHandNow.GetComponent<MultimeterMain>().ActiveOrtoBt(false);
+        objectInHandNow.GetComponent<MultimeterMain>().OrtoViewButtonsDisable(true);
     }
     private void SiderCuttersInHand()
     {
@@ -143,6 +155,10 @@ public class OrtoViewCameraPosition : MonoBehaviour
                 objectInHandNow.GetComponent<Tweezers>().RemoveParent();
                 objectInHandNow.GetComponent<Tweezers>().PopupMenuOrtoviewButtons(false);
             }
+            else if(objectInHandNow.GetComponent<MultimeterMain>())
+            {
+                objectInHandNow.GetComponent<MultimeterMain>().OrtoViewButtonsDisable(false);
+            }
             playerCamera.GetComponent<Camera>().orthographic = false;
         }
         bigTweezer.TransparentMaterial(false);
@@ -164,6 +180,7 @@ public class OrtoViewCameraPosition : MonoBehaviour
         //player.rotation = startRotation;
         player.GetComponent<PlayerController>().enabled = true;
         virtualCamera.enabled = true;
+        isOrtoViewActive= false;
         Debug.Log(player.GetComponent<PlayerController>().enabled);
     }
 }

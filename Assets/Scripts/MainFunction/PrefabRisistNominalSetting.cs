@@ -67,6 +67,10 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     [Header("DetectBendLegs")]
     [SerializeField] List<BendDeformer> bendDeformers;
     [SerializeField] bool needBendLegs;
+
+    [Header("MultimeterDipstickpoint")]
+    [SerializeField] Transform leftPoint;
+    [SerializeField] Transform rightPoint;
     
 
     private void Start()
@@ -76,8 +80,18 @@ public class PrefabRisistNominalSetting : MonoBehaviour
         rb= GetComponent<Rigidbody>();
         checkSolderOnLegsElement = transform.GetChild(0).GetComponent<CheckSolderOnLegsElement>();
     }
-
-
+    public Transform ReturnLeftPoint()
+    {
+        return leftPoint;
+    }
+    public Transform ReturnRightPoint() 
+    {
+        return rightPoint;
+    }
+    public bool CheckStateComponent()
+    {
+        return checkSolderOnLegsElement.IsGoodComponent();
+    }
 
     public void SetTweezersGrab(bool isGrab)
     {

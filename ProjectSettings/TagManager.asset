@@ -20,6 +20,7 @@ TagManager:
   - SlideCuttersLeg
   - SideCutters
   - StaticWristStrap
+  - Multimeter
   layers:
   - Default
   - TransparentFX

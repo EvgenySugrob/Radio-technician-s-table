@@ -10,6 +10,7 @@ public class PressButtonRotationModeSwap : MonoBehaviour
     [SerializeField] DragAndRotation dragAndRotation;
 
     [SerializeField] private GameObject draggedObject;
+    [SerializeField] OrtoViewCameraPosition ortoView;
 
     private void OnEnable()
     {
@@ -24,7 +25,7 @@ public class PressButtonRotationModeSwap : MonoBehaviour
 
     private void SpaceKey_performed(InputAction.CallbackContext obj)
     {
-        if(draggedObject != null)
+        if(draggedObject != null && ortoView.isOrtoViewActive ==false)
         {
             draggedObject.TryGetComponent<PopupMenuObjectType>(out var popupObj);
             popupObj.RotateObjectSpacePress();
