@@ -45,11 +45,17 @@ public class SolderInteract : MonoBehaviour
     [SerializeField] MeshRenderer rosinMeshRenderer;
     private Transform consumedPart;
     [SerializeField] float scaleReductionStep = 0.05f;
+    [SerializeField] GameObject ironTinningProgress;
+    [SerializeField] Image tinnignFill;
+    [SerializeField] bool progressTinningDisable;
 
     [Header("SolderOnIronTip")]
     [SerializeField] float duration = 1f;
     [SerializeField] Transform solderOnIronTip;
-    private float timer = 0;
+    [SerializeField] private float timer = 0;
+    [SerializeField] GameObject takingSolderProgress;
+    [SerializeField] Image progressFill;
+    [SerializeField] bool progressSolderOnTipDisable;
 
     [Header("MainSolder Settings")]
     [SerializeField] SolderStation solderStation;
@@ -155,10 +161,18 @@ public class SolderInteract : MonoBehaviour
         if(isIronTinnig)
         {
             Debug.Log("Лужение");
+            if(progressTinningDisable==false)
+            {
+                ironTinningProgress.SetActive(true);
+            }
+            else
+            {
+                ironTinningProgress.SetActive(false);
+            }
             ironTinningTimer += Time.deltaTime;
             mixedColor = Color.Lerp(mixedColor, endColor, ironTinningTimer);
             rosinMeshRenderer.material.color = mixedColor;
-            
+            tinnignFill.fillAmount = ironTinningTimer / ironTinningDuration;
             if(isReady ==false)
             {
                 Vector3 consumedPartScale = consumedPart.localScale;
@@ -170,6 +184,7 @@ public class SolderInteract : MonoBehaviour
             {
                 isReady = true;
                 isIronTin = true;
+                progressTinningDisable = true;
                 Debug.Log("Залудил");
             }
         }
@@ -212,6 +227,8 @@ public class SolderInteract : MonoBehaviour
                 isIronTin= false;
                 timer = 0;
                 isBadReady = true;
+                progressFill.fillAmount = 0;
+                progressSolderOnTipDisable = false;
             }
 
         }
@@ -246,19 +263,30 @@ public class SolderInteract : MonoBehaviour
     {
         if(isReady && isIronTin && isRosin && isIronTinnig)
         {
+            if(progressSolderOnTipDisable ==false)
+            {
+                takingSolderProgress.SetActive(true);
+            }
+            else
+            {
+                takingSolderProgress.SetActive(false);
+            }
             Debug.Log("Забор припоя");
             Vector3 currentScale = solderOnIronTip.localScale;
             timer += Time.deltaTime;
             Vector3 newScale = Vector3.Lerp(currentScale, Vector3.one, timer);
             solderOnIronTip.localScale = newScale;
+
+            progressFill.fillAmount = timer / duration;
             if(timer>=duration)
             {
                 Debug.Log("Припой на паяльнике");
-                
+                progressSolderOnTipDisable= true;
                 thereIsSolder = true;
                 holdTimer = 0;
                 badTimer = 0;
                 badProgress.fillAmount = 0;
+                
             }
         }
     }

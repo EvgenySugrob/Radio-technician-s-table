@@ -22,7 +22,7 @@ public class SwitchOnOff : MonoBehaviour
     [Header("LogMessage")]
     [SerializeField] LogMessageSpawn logMessageSpawn;
 
-    private bool powerOn;
+    [SerializeField]private bool powerOn;
 
     private void Start()
     {
@@ -134,7 +134,7 @@ public class SwitchOnOff : MonoBehaviour
         {
             solderPowerOnIndicator.material.EnableKeyword("_EMISSION");
         }
-        if(ultrasonicBath.ultrasonicBathEnable)
+        if(ultrasonicBath.ultrasonicBathEnable && ultrasonicBath.plugInSocket)
         {
             ultrasonicBathPowerIndicator.material.EnableKeyword("_EMISSION");
         }

@@ -7,6 +7,7 @@ public class QuickOutlineDetect : MonoBehaviour
 {
     [Header("OutlineController")]
     [SerializeField] QuickOutlineController currentOutlineController;
+    [SerializeField] QuickOutlineController prevOutlineController;
     [SerializeField] GameObject currentObject;
 
     [Header("Detect Setting")]
@@ -31,9 +32,20 @@ public class QuickOutlineDetect : MonoBehaviour
             {
                 currentObject = hit.collider.gameObject;
 
-                if(currentObject.GetComponent<QuickOutlineController>())
+                if (currentObject.GetComponent<QuickOutlineController>())
                 {
                     currentOutlineController = currentObject.GetComponent<QuickOutlineController>();
+
+                    if(prevOutlineController == null)
+                    {
+                        prevOutlineController = currentOutlineController;
+                    }
+                    
+                    if(prevOutlineController != currentOutlineController)
+                    {
+                        prevOutlineController.DisableOutline();
+                        prevOutlineController = currentOutlineController;
+                    }
                 }
 
                 if(currentOutlineController != null && currentObject.GetComponent<QuickOutlineController>())

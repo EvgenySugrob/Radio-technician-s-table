@@ -215,7 +215,7 @@ public class DragAndDrop : MonoBehaviour
                 }
                 else
                 {
-                    logMessageSpawn.GetTextMessageInLog(true, "Не надет антистатический браслет");
+                    logMessageSpawn.GetTextMessageInLog(false, "Не надет антистатический браслет");
                 }   
             }
         }

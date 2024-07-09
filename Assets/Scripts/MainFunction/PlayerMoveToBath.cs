@@ -82,14 +82,18 @@ public class PlayerMoveToBath : MonoBehaviour
             backToMainViewBt.SetActive(true);
             switchOnOffCollider.enabled = true;
 
-            if(enabledButtonsControl.Count!=0)
+            foreach(GameObject item in buttonsControl)
             {
-                foreach (GameObject item in enabledButtonsControl)
-                {
-                    item.SetActive(true);
-                    enabledButtonsControl.Remove(item);
-                }
+                item.SetActive(true);
             }
+            //if(enabledButtonsControl.Count!=0)
+            //{
+            //    foreach (GameObject item in enabledButtonsControl)
+            //    {
+            //        item.SetActive(true);
+            //        enabledButtonsControl.Remove(item);
+            //    }
+            //}
 
         }
     }
@@ -144,11 +148,7 @@ public class PlayerMoveToBath : MonoBehaviour
     {
         foreach(GameObject item in buttonsControl)
         {
-            if(item.activeSelf)
-            {
-                enabledButtonsControl.Add(item);
-                item.SetActive(false);
-            }
+           item.SetActive(false);
         }
         foreach (GameObject item in hideObject)
         {
