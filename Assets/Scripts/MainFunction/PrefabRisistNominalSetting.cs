@@ -60,6 +60,10 @@ public class PrefabRisistNominalSetting : MonoBehaviour
     [SerializeField] Transform slot;
 
     public double resistNominal { get; set; }
+    [SerializeField] bool isNotSetNominal;
+    [SerializeField] double nominal;
+    public string nominalText;
+    [SerializeField] bool isCapasitor;
     [SerializeField] bool isSolderOnSLot;
     [SerializeField] string contextFilmResistName;
     [SerializeField] CheckSolderOnLegsElement checkSolderOnLegsElement;
@@ -75,10 +79,22 @@ public class PrefabRisistNominalSetting : MonoBehaviour
 
     private void Start()
     {
+        if (isNotSetNominal)
+        {
+            resistNominal = nominal;
+        }
         startRotation = transform.localRotation;
         prefabRisistNominal = GetComponent<PrefabRisistNominalSetting>();
         rb= GetComponent<Rigidbody>();
         checkSolderOnLegsElement = transform.GetChild(0).GetComponent<CheckSolderOnLegsElement>();
+    }
+    public bool IsNotSetNominal()
+    {
+        return isNotSetNominal;
+    }
+    public bool IsCapasitor()
+    {
+        return isCapasitor;
     }
     public Transform ReturnLeftPoint()
     {

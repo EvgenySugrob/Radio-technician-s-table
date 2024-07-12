@@ -13,15 +13,15 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DoKiSan Systems
-  productName: FS-SIM-ELS
+  productName: ELECTRON-SIM-RMR
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
-  m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
+  m_SplashScreenBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
   m_ShowUnitySplashScreen: 1
   m_ShowUnitySplashLogo: 1
   m_SplashScreenOverlayOpacity: 1
   m_SplashScreenAnimation: 1
-  m_SplashScreenLogoStyle: 1
+  m_SplashScreenLogoStyle: 0
   m_SplashScreenDrawMode: 0
   m_SplashScreenBackgroundAnimationZoom: 1
   m_SplashScreenLogoAnimationZoom: 1
@@ -281,7 +281,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 36f1f1680393bd64ba557d6394b88b73, type: 3}
+      m_Icon: {fileID: 2800000, guid: 8a5c783bdeeb3df4cb83d72e5960a87e, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -847,7 +847,7 @@ PlayerSettings:
   suppressCommonWarnings: 1
   allowUnsafeCode: 0
   useDeterministicCompilation: 1
-  additionalIl2CppArgs: --linker-flags="/MAP:"D:/GitProject/GitLab/fs-sim-els/Assets\Mapfile.map""
+  additionalIl2CppArgs: --linker-flags="/MAP:"D:/GitProject/GitLab/Radio-technician-s-table/Assets\Mapfile.map""
   scriptingRuntimeVersion: 1
   gcIncremental: 0
   gcWBarrierValidation: 0

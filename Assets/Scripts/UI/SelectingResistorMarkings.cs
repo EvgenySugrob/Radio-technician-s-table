@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -416,10 +415,13 @@ public class SelectingResistorMarkings : MonoBehaviour
         }
         prefabResist.resistNominal = endNominal;
         resistNominalText.text = nominal.ToString() + $" {multiplicateString} ± {admittance}%";
+        Debug.Log("NOMINAL " + nominal.ToString());
+        prefabResist.nominalText = nominal.ToString();
     }
 
     public void SetPrefabAndStartSetting(int firstValue,int secondValue, int thirdValue,string multiplicateValue,int admittanceValue, PrefabRisistNominalSetting prefab)
     {
+        prefabResist = null;
         prefabResist = prefab;
         FirstDigitalValue(firstValue);
         SecondDigitalValue(secondValue);
@@ -437,7 +439,7 @@ public class SelectingResistorMarkings : MonoBehaviour
 
     public void ApplayMarking()
     {
-        Instantiate(prefabResist.transform.gameObject,pointSpawnResist.position,pointSpawnResist.rotation);
+        GameObject resist = Instantiate(prefabResist.transform.gameObject,pointSpawnResist.position,pointSpawnResist.rotation);
         transform.gameObject.SetActive(false);
     }
 }

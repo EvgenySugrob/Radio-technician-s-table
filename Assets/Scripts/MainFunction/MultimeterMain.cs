@@ -1,4 +1,5 @@
 using cakeslice;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -51,11 +52,13 @@ public class MultimeterMain : MonoBehaviour
     private Vector3 startRightDipstickPosition;
     private Quaternion startLeftDipstickRotation;
     private Quaternion startRightDipstickRotation;
+    private string defText;
 
     private void Start()
     {
         startLeftDipstickPosition = leftDipstick.localPosition;
         startRightDipstickPosition = rightDipstick.localPosition;
+        defText = displayText.text;
     }
 
     public bool IsTypeSelect()
@@ -150,6 +153,20 @@ public class MultimeterMain : MonoBehaviour
             rightDipstick.position = prefabSetting.ReturnRightPoint().position;
             rightDipstick.rotation = prefabSetting.ReturnRightPoint().rotation;
 
+            if(prefabSetting.IsCapasitor())
+            {
+                displayText.text = "";
+            }
+            else if(prefabSetting.IsNotSetNominal())
+            {
+                displayText.text = prefabSetting.resistNominal.ToString();
+            }
+            else if(prefabSetting.IsCapasitor()==false && prefabSetting.IsNotSetNominal()==false)
+            {
+                Debug.Log(prefabSetting.nominalText);
+                displayText.text = prefabSetting.nominalText;
+            }
+
             StartCoroutine(DisplayCheck());
         }
     }
@@ -169,6 +186,7 @@ public class MultimeterMain : MonoBehaviour
 
         goodImage.SetActive(false);
         badImage.SetActive(false);
+        displayText.text = defText;
 
         leftDipstick.localPosition = startLeftDipstickPosition;
         leftDipstick.rotation = startLeftDipstickRotation;
