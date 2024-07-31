@@ -32,6 +32,10 @@ public class CottonSwabControl : MonoBehaviour
     public void DeleteSwap()
     {
         popupMenuCustom.ClosePopupMenu();
+        if(cottonSwabSpawn.CheckDragAndRotationSwap())
+        {
+            popupMenuCustom.RotationSwap();
+        }
         cottonSwabSpawn.RemoveSpawnSwab();
     }
 

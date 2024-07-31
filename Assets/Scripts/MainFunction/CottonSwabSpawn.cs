@@ -6,8 +6,10 @@ public class CottonSwabSpawn : MonoBehaviour
 {
     [Header("DragAndDrop and Player")]
     [SerializeField] DragAndDrop dragAndDrop;
+    [SerializeField] DragAndRotation dragAndRotation;
     [SerializeField] Transform spawnPoint;
     [SerializeField] PressButtonRotationModeSwap pressButtonRotationModeSwap;
+    [SerializeField] QuickOutlineDetect quickOutlineDetect;
     private float distanceToPlayer = 0.28f;
 
     [Header("SpawnSwab")]
@@ -42,6 +44,19 @@ public class CottonSwabSpawn : MonoBehaviour
         dragAndDrop.ClearHand();
         Destroy(currentSwab);
         currentSwab = null;
+        quickOutlineDetect.DetectionEnable();
+    }
+
+    public bool CheckDragAndRotationSwap()
+    {
+        if (dragAndRotation.enabled)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public GameObject ReturnCurrenSwab()
